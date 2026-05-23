@@ -1,36 +1,59 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Layers, Plus, Search } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Layers, PanelLeft, Plus, Search } from 'lucide-react';
+import { useSidebar } from './sidebar-context';
 
 export default function TopBar() {
+  const { toggleCollapsed, toggleMobile } = useSidebar();
+
   return (
-    <header className="grid grid-cols-3 items-center px-4 h-14 border-b border-border shrink-0">
-      <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-linear-to-br from-violet-500 to-indigo-700">
-          <Layers className="h-4 w-4 text-white" />
+    <header className='grid grid-cols-3 items-center px-4 h-14 border-b border-border shrink-0'>
+      <div className='flex items-center gap-2'>
+        <div className='flex items-center justify-center h-7 w-7 rounded-sm bg-linear-to-br from-violet-500 to-indigo-700'>
+          <Layers className='h-4 w-4 text-white' />
         </div>
-        <span className="text-lg font-semibold tracking-tight">DevStash</span>
+        <span className='text-lg font-semibold tracking-tight'>DevStash</span>
+        {/* Desktop toggle */}
+        <Button
+          variant='ghost'
+          size='icon'
+          className='hidden lg:flex h-7 w-7 ml-1'
+          onClick={toggleCollapsed}
+          aria-label='Toggle sidebar'
+        >
+          <PanelLeft className='h-4 w-4' />
+        </Button>
+        {/* Mobile toggle */}
+        <Button
+          variant='ghost'
+          size='icon'
+          className='lg:hidden h-7 w-7 ml-1'
+          onClick={toggleMobile}
+          aria-label='Open sidebar'
+        >
+          <PanelLeft className='h-4 w-4' />
+        </Button>
       </div>
 
-      <div className="relative w-full max-w-sm justify-self-center">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className='relative w-full max-w-sm justify-self-center'>
+        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
-          placeholder="Search items..."
-          className="pl-9 pr-16 bg-muted border-0 w-full"
+          placeholder='Search items...'
+          className='pl-9 pr-16 bg-muted border-0 w-full'
         />
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground">
+        <kbd className='absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground'>
           ⌘K
         </kbd>
       </div>
 
-      <div className="flex items-center gap-2 justify-end">
-        <Button variant="outline" size="sm">
+      <div className='flex items-center gap-2 justify-end'>
+        <Button variant='outline' size='sm'>
           New Collection
         </Button>
-        <Button size="sm">
-          <Plus className="h-4 w-4" />
+        <Button size='sm'>
+          <Plus className='h-4 w-4' />
           New Item
         </Button>
       </div>
