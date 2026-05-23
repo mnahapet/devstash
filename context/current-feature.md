@@ -17,3 +17,5 @@
 ## History
 
 <!-- Keep this updated. Earliest to latest -->
+
+- next.js cleanup and tailwind setup
