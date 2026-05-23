@@ -4,17 +4,9 @@ Dashboard UI Phase 2 - Collapsible sidebar with navigation, collections, and use
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
-
-- [ ] Collapsible sidebar
-- [ ] Items/types with links to /items/TYPE (e.g. /items/snippets)
-- [ ] Favorite collections
-- [ ] Most recent collections
-- [ ] User avatar area at the bottom
-- [ ] Drawer icon to open/close sidebar
-- [ ] Always a drawer on mobile view
 
 ## Notes
 
@@ -34,3 +26,11 @@ In Progress
   - [x] Dark mode by default
   - [x] Top bar with search and new item button (display only)
   - [x] Placeholder for sidebar and main area. Just add an h2 with "Sidebar" and "Main" for now.
+- Dashboard UI Phase 2: Collapsible sidebar with navigation, collections, and user avatar
+  - [x] Collapsible sidebar
+  - [x] Items/types with links to /items/TYPE (e.g. /items/snippets)
+  - [x] Favorite collections
+  - [x] Most recent collections
+  - [x] User avatar area at the bottom
+  - [x] Drawer icon to open/close sidebar
+  - [x] Always a drawer on mobile view
