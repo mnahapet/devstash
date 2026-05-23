@@ -46,3 +46,5 @@ Completed
   - [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
   - [x] FolderPlus icon on New Collection button
   - [x] Styled thin scrollbar on main content area matching sidebar scrollbar
+- Sidebar collection folder icon colored by dominant item type
+  - [x] Folder icons in "All Collections" sidebar section are colored with the dominant item type color (highest count in typeDistribution)

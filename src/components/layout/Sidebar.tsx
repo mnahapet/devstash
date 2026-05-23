@@ -31,6 +31,16 @@ import {
   mockUser,
 } from '@/lib/mock-data';
 
+function getDominantTypeColor(
+  distribution: { typeId: string; count: number }[]
+): string {
+  if (!distribution.length) return 'currentColor';
+  const dominant = distribution.reduce((max, d) =>
+    d.count > max.count ? d : max
+  );
+  return mockItemTypes.find(t => t.id === dominant.typeId)?.color ?? 'currentColor';
+}
+
 const ICON_MAP: Record<string, LucideIcon> = {
   Code,
   Sparkles,
@@ -151,7 +161,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                       onClick={onClose}
                       className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                     >
-                      <Folder className='h-3.5 w-3.5 shrink-0 text-muted-foreground' />
+                      <Folder
+                        className='h-3.5 w-3.5 shrink-0'
+                        style={{ color: getDominantTypeColor(col.typeDistribution) }}
+                      />
                       <span className='flex-1 truncate'>{col.name}</span>
                       <span className='text-xs text-muted-foreground'>
                         {col.itemCount}
