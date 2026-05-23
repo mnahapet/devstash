@@ -1,14 +1,28 @@
 import Sidebar from '@/components/layout/Sidebar';
+import StatsCards from '@/components/dashboard/StatsCards';
+import RecentCollections from '@/components/dashboard/RecentCollections';
+import PinnedItems from '@/components/dashboard/PinnedItems';
+import RecentItems from '@/components/dashboard/RecentItems';
 
 export default function DashboardPage() {
   return (
     <>
       <Sidebar />
 
-      <main className='flex-1 overflow-y-auto p-6'>
-        <h2 className='font-semibold text-sm text-muted-foreground uppercase tracking-wider'>
-          Main
-        </h2>
+      <main className='main-scroll flex-1 overflow-y-auto p-6'>
+        <div className='max-w-5xl mx-auto space-y-8'>
+          <div>
+            <h1 className='text-2xl font-bold'>Dashboard</h1>
+            <p className='text-sm text-muted-foreground mt-1'>
+              Your developer knowledge hub
+            </p>
+          </div>
+
+          <StatsCards />
+          <RecentCollections />
+          <PinnedItems />
+          <RecentItems />
+        </div>
       </main>
     </>
   );

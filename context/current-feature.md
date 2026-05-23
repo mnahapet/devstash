@@ -1,19 +1,31 @@
 # Current Feature
 
-Dashboard UI Phase 2 - Collapsible sidebar with navigation, collections, and user avatar.
+Dashboard UI Phase 3 - Main area with stats cards, recent collections, pinned items, and recent items.
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
+
+- [x] 4 stats cards at the top (number of items, collections, favorite items, favorite collections)
+- [x] Recent collections
+- [x] Pinned items
+- [x] 10 recent items
+- [x] Collection cards have a proportional color strip on the left based on item type distribution
+- [x] Pinned and recent items have a left border in their item type color
+- [x] Dark/light mode toggler in top bar at right edge next to New Item (persists to localStorage)
+- [x] List/grid view switcher in top bar (affects pinned and recent items)
+- [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
+- [x] FolderPlus icon on New Collection button
+- [x] Styled thin scrollbar on main content area matching sidebar scrollbar
 
 ## Notes
 
 - Reference screenshots: @context/screenshots/dashboard-ui-main.png, @context/screenshots/dashboard-ui-drawer.png
 - See @context/project-overview.md for full context
 - Mock data available at @src/lib/mock-data.ts
-- Spec: @context/features/dashboard-phase-2-spec.md
+- Spec: @context/features/dashboard-phase-3-spec.md
 
 ## History
 
