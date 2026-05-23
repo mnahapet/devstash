@@ -4,21 +4,9 @@ Dashboard UI Phase 3 - Main area with stats cards, recent collections, pinned it
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
-
-- [x] 4 stats cards at the top (number of items, collections, favorite items, favorite collections)
-- [x] Recent collections
-- [x] Pinned items
-- [x] 10 recent items
-- [x] Collection cards have a proportional color strip on the left based on item type distribution
-- [x] Pinned and recent items have a left border in their item type color
-- [x] Dark/light mode toggler in top bar at right edge next to New Item (persists to localStorage)
-- [x] List/grid view switcher in top bar (affects pinned and recent items)
-- [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
-- [x] FolderPlus icon on New Collection button
-- [x] Styled thin scrollbar on main content area matching sidebar scrollbar
 
 ## Notes
 
@@ -46,3 +34,15 @@ In Progress
   - [x] User avatar area at the bottom
   - [x] Drawer icon to open/close sidebar
   - [x] Always a drawer on mobile view
+- Dashboard UI Phase 3: Main area with stats cards, recent collections, pinned items, and recent items
+  - [x] 4 stats cards at the top (number of items, collections, favorite items, favorite collections)
+  - [x] Recent collections
+  - [x] Pinned items
+  - [x] 10 recent items
+  - [x] Collection cards have a proportional color strip on the left based on item type distribution
+  - [x] Pinned and recent items have a left border in their item type color
+  - [x] Dark/light mode toggler in top bar at right edge next to New Item (persists to localStorage)
+  - [x] List/grid view switcher in top bar (affects pinned and recent items)
+  - [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
+  - [x] FolderPlus icon on New Collection button
+  - [x] Styled thin scrollbar on main content area matching sidebar scrollbar
