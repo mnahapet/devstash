@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/layout/theme-context";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -22,7 +23,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }
