@@ -154,6 +154,7 @@ export default function FavoriteItems({ favoriteCollections, favoriteItems }: Pr
       <div className='flex items-center justify-between mb-3'>
         <div className='flex items-center gap-2'>
           <Heart className='h-3.5 w-3.5 fill-pink-500 text-pink-500' />
+          <Star className='h-3.5 w-3.5 fill-yellow-400 text-yellow-400' />
           <h2 className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>Favorites</h2>
         </div>
         <div className='flex items-center gap-1'>

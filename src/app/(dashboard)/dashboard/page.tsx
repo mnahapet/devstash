@@ -31,22 +31,22 @@ export default async function DashboardPage() {
   const pinnedCollections = collections
     .filter(c => c.isPinned)
     .slice(0, 1)
-    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount }));
+    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const pinnedItems = items
     .filter(i => i.isPinned)
     .slice(0, 1)
-    .map(i => ({ id: i.id, title: i.title }));
+    .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
   const favoriteSidebarCollections = collections
     .filter(c => c.isFavorite)
     .slice(0, 3)
-    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount }));
+    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const favoriteItems = items
     .filter(i => i.isFavorite)
     .slice(0, 3)
-    .map(i => ({ id: i.id, title: i.title }));
+    .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
   const recentCollections = collections
     .slice(0, 3)

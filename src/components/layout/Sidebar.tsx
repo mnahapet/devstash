@@ -59,8 +59,8 @@ function getUserInitials(name: string | null): string {
 }
 
 export type SidebarUser = { name: string | null; email: string };
-export type SidebarFavCollection = { id: string; name: string; itemCount: number };
-export type SidebarFavItem = { id: string; title: string };
+export type SidebarFavCollection = { id: string; name: string; itemCount: number; typeDistribution: { color: string; count: number }[] };
+export type SidebarFavItem = { id: string; title: string; itemType: { icon: string; color: string } };
 export type SidebarRecentCollection = {
   id: string;
   name: string;
@@ -72,8 +72,8 @@ export type SidebarRecentItem = {
   title: string;
   itemType: { icon: string; color: string };
 };
-export type SidebarPinnedItem = { id: string; title: string };
-export type SidebarPinnedCollection = { id: string; name: string; itemCount: number };
+export type SidebarPinnedItem = { id: string; title: string; itemType: { icon: string; color: string } };
+export type SidebarPinnedCollection = { id: string; name: string; itemCount: number; typeDistribution: { color: string; count: number }[] };
 
 interface SidebarProps {
   user: SidebarUser;
@@ -103,20 +103,20 @@ function MiniSidebarContent({
 
   return (
     <div className='flex flex-col items-center h-full py-2'>
-      {showToggle && (
-        <div className='flex justify-end w-full mb-3 pr-1 shrink-0'>
+      <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center w-full px-1.5'>
+        {/* Toggle */}
+        {showToggle && (
           <Button
             variant='ghost'
             size='icon'
-            className='h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+            className='h-8 w-8 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors shrink-0'
             onClick={onToggle}
             aria-label='Toggle sidebar'
           >
             <PanelLeftOpen className='h-4 w-4' />
           </Button>
-        </div>
-      )}
-      <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center w-full px-1.5'>
+        )}
+
         {/* Pin */}
         <Link
           href='/dashboard'
@@ -124,7 +124,7 @@ function MiniSidebarContent({
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Pin className='h-4 w-4 shrink-0 fill-foreground text-foreground' />
+          <Pin className='h-4 w-4 shrink-0 text-foreground' />
         </Link>
 
         <div className='w-full border-t border-border my-1 shrink-0' />
@@ -158,7 +158,7 @@ function MiniSidebarContent({
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Heart className='h-4 w-4 shrink-0 fill-pink-500 text-pink-500' />
+          <Heart className='h-4 w-4 shrink-0 text-pink-500' />
         </Link>
         <Link
           href='/dashboard'
@@ -166,7 +166,7 @@ function MiniSidebarContent({
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Star className='h-4 w-4 shrink-0 fill-yellow-400 text-yellow-400' />
+          <Star className='h-4 w-4 shrink-0 text-yellow-400' />
         </Link>
 
         <div className='w-full border-t border-border my-1 shrink-0' />
@@ -251,22 +251,30 @@ function SidebarContent({
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
+                  <FolderOpen
+                    className='h-3.5 w-3.5 shrink-0'
+                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
+                  />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
-              {pinnedItems.map(item => (
-                <Link
-                  key={item.id}
-                  href={`/items/${item.id}`}
-                  onClick={onClose}
-                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
-                  <span className='flex-1 truncate'>{item.title}</span>
-                </Link>
-              ))}
+              {pinnedItems.map(item => {
+                const Icon = ICON_MAP[item.itemType.icon];
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/items/${item.id}`}
+                    onClick={onClose}
+                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                  >
+                    {Icon && (
+                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
+                    )}
+                    <span className='flex-1 truncate'>{item.title}</span>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
@@ -333,22 +341,30 @@ function SidebarContent({
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Heart className='h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500' />
+                  <FolderOpen
+                    className='h-3.5 w-3.5 shrink-0'
+                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
+                  />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
-              {favoriteItems.map(item => (
-                <Link
-                  key={item.id}
-                  href={`/items/${item.id}`}
-                  onClick={onClose}
-                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                >
-                  <Star className='h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400' />
-                  <span className='flex-1 truncate'>{item.title}</span>
-                </Link>
-              ))}
+              {favoriteItems.map(item => {
+                const Icon = ICON_MAP[item.itemType.icon];
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/items/${item.id}`}
+                    onClick={onClose}
+                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                  >
+                    {Icon && (
+                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
+                    )}
+                    <span className='flex-1 truncate'>{item.title}</span>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
