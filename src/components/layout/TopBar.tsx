@@ -82,9 +82,9 @@ export default function TopBar() {
   }
 
   return (
-    <header className='relative z-10 flex items-center gap-2 px-4 h-14 border-b border-border shrink-0'>
-      {/* Left: logo + sidebar toggle */}
-      <div className='flex items-center gap-2 shrink-0'>
+    <header className='relative z-10 grid grid-cols-3 items-center px-4 h-14 border-b border-border shrink-0'>
+      {/* Left: logo + title */}
+      <div className='flex items-center gap-2'>
         <div className='flex items-center justify-center h-7 w-7 rounded-sm bg-linear-to-br from-violet-500 to-indigo-700'>
           <Layers className='h-4 w-4 text-white' />
         </div>
@@ -94,7 +94,7 @@ export default function TopBar() {
       </div>
 
       {/* Center: search — hidden on mobile */}
-      <div className='relative flex-1 max-w-sm mx-auto hidden sm:block'>
+      <div className='relative max-w-sm w-full mx-auto hidden sm:block'>
         <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
         <Input
           placeholder='Search items...'
@@ -106,7 +106,7 @@ export default function TopBar() {
       </div>
 
       {/* Right: controls */}
-      <div className='flex items-center gap-1.5 ml-auto shrink-0'>
+      <div className='flex items-center gap-1.5 justify-end'>
         {/* Mobile search icon */}
         <Button
           variant='ghost'
