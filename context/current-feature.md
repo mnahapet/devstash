@@ -123,3 +123,18 @@ Completed
   - [x] Collection cards (grid): item count moved inline next to folder icon in top row instead of separate line below title
   - [x] Collection cards (grid): type icons pinned to bottom with mt-auto pt-3 (flex flex-col added to inner content div)
   - [x] Tags: hover state added (bg-accent text-foreground with transition) across grid and list modes
+- Dashboard further refinements
+  - [x] Items grid changed to 3 columns (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3) matching collections
+  - [x] RecentCarousel added below Items section: shows 3 most recent collections then 3 most recent items in a carousel with Clock icon header
+  - [x] RecentItems.tsx renamed to Items.tsx (component: Items), RecentCollections.tsx renamed to Collections.tsx (component: Collections)
+  - [x] Sidebar: replaced closed Folder icon with FolderOpen for collection links
+- Dashboard stats cards polish
+  - [x] Items card: label renamed from "Total Items" to "Items", icon changed to filled white Library
+  - [x] Collections card: icon changed to filled blue closed Folder
+  - [x] Favorite Items card: icon changed to filled yellow Star with yellow-tinted background
+  - [x] Favorite Collections card: icon changed to filled pink Heart with pink-tinted background
+- Mini sidebar restructure
+  - [x] Added unfilled Pin icon at top, then separator, type icons, separator, pink Heart + yellow Star icons, separator, Clock icon
+  - [x] Heart and Star link to /dashboard favorites; Clock links to /dashboard recent
+- Dashboard further refinements
+  - [x] RecentCarousel added below Items section: shows 3 most recent collections then 3 most recent items in a carousel with Clock icon header

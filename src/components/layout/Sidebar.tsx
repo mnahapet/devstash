@@ -8,13 +8,14 @@ import {
   Terminal,
   StickyNote,
   File,
-  Folder,
+  FolderOpen,
   Image,
   Link as LinkIcon,
   ChevronDown,
   Star,
   Heart,
   Pin,
+  Clock,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -83,23 +84,70 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
           </Button>
         </div>
       )}
-      <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center gap-0.5 w-full px-1.5'>
-        {mockItemTypes.map(type => {
-          const Icon = ICON_MAP[type.icon];
-          return (
-            <Link
-              key={type.id}
-              href={`/items/${type.name}s`}
-              title={`${type.name}s`}
-              onClick={onClose}
-              className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors'
-            >
-              {Icon && (
-                <Icon className='h-4 w-4 shrink-0' style={{ color: type.color }} />
-              )}
-            </Link>
-          );
-        })}
+      <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center w-full px-1.5'>
+        {/* Pin */}
+        <Link
+          href='/dashboard'
+          title='Pinned'
+          onClick={onClose}
+          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+        >
+          <Pin className='h-4 w-4 shrink-0 text-muted-foreground' />
+        </Link>
+
+        <div className='w-full border-t border-border my-1 shrink-0' />
+
+        {/* Type icons */}
+        <div className='flex flex-col items-center gap-0.5 w-full'>
+          {mockItemTypes.map(type => {
+            const Icon = ICON_MAP[type.icon];
+            return (
+              <Link
+                key={type.id}
+                href={`/items/${type.name}s`}
+                title={`${type.name}s`}
+                onClick={onClose}
+                className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors'
+              >
+                {Icon && (
+                  <Icon className='h-4 w-4 shrink-0' style={{ color: type.color }} />
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        <div className='w-full border-t border-border my-1 shrink-0' />
+
+        {/* Heart + Star */}
+        <Link
+          href='/dashboard'
+          title='Favorites'
+          onClick={onClose}
+          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+        >
+          <Heart className='h-4 w-4 shrink-0 text-pink-500' />
+        </Link>
+        <Link
+          href='/dashboard'
+          title='Favorites'
+          onClick={onClose}
+          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+        >
+          <Star className='h-4 w-4 shrink-0 text-yellow-400' />
+        </Link>
+
+        <div className='w-full border-t border-border my-1 shrink-0' />
+
+        {/* Recent */}
+        <Link
+          href='/dashboard'
+          title='Recent'
+          onClick={onClose}
+          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+        >
+          <Clock className='h-4 w-4 shrink-0 text-muted-foreground' />
+        </Link>
       </div>
 
       <div className='shrink-0 pt-2 border-t border-border w-full flex justify-center'>
@@ -322,7 +370,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Folder
+                  <FolderOpen
                     className='h-3.5 w-3.5 shrink-0'
                     style={{ color: getDominantTypeColor(col.typeDistribution) }}
                   />

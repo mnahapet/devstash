@@ -1,9 +1,10 @@
 import Sidebar from '@/components/layout/Sidebar';
 import StatsCards from '@/components/dashboard/StatsCards';
-import RecentCollections from '@/components/dashboard/RecentCollections';
+import Collections from '@/components/dashboard/Collections';
 import PinnedItems from '@/components/dashboard/PinnedItems';
 import FavoriteItems from '@/components/dashboard/FavoriteItems';
-import RecentItems from '@/components/dashboard/RecentItems';
+import Items from '@/components/dashboard/Items';
+import RecentCarousel from '@/components/dashboard/RecentCarousel';
 
 export default function DashboardPage() {
   return (
@@ -22,8 +23,9 @@ export default function DashboardPage() {
           <StatsCards />
           <PinnedItems />
           <FavoriteItems />
-          <RecentCollections />
-          <RecentItems />
+          <Collections />
+          <Items />
+          <RecentCarousel />
         </div>
       </main>
     </>

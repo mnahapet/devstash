@@ -58,7 +58,7 @@ function buildGradient(
 const allCollections = [...mockCollections]
   .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-export default function RecentCollections() {
+export default function Collections() {
   const { viewMode } = useView();
 
   return (
