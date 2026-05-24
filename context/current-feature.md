@@ -67,6 +67,11 @@ Completed
   - [x] Mobile drawer starts below TopBar (top-14 offset) so TopBar is never covered
   - [x] Sidebar collapse animation scoped to transition-[width] to prevent TopBar flicker
   - [x] Scrollbars reworked: theme-aware rgba thumb colors (light/dark mode), 6px width, transparent track, consistent appearance across sidebar and main area
+- Sidebar & favicon polish
+  - [x] Desktop collapse toggler now collapses to mini sidebar (icons only, 48px) instead of fully hiding
+  - [x] Mobile drawer width fixed to 240px (15rem) via inline style — Tailwind w-* was overridden by SheetContent's built-in data-[side=left]:w-3/4
+  - [x] Sidebar hydration mismatch fixed: isCollapsed now always initializes as false on server, then reads localStorage in useEffect
+  - [x] Favicon added as src/app/icon.tsx (Next.js App Router auto-detection) — black Layers icon, 32×32
 - Prisma 7 + Neon PostgreSQL setup
   - [x] Install Prisma 7 and review upgrade guide for breaking changes
   - [x] Configure Neon PostgreSQL connection via DATABASE_URL
