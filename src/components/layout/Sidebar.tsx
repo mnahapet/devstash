@@ -29,23 +29,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { useSidebar } from './sidebar-context';
-import {
-  mockItemTypes,
-  mockItemTypeCounts,
-  mockCollections,
-  mockItems,
-  mockUser,
-} from '@/lib/mock-data';
-
-function getDominantTypeColor(
-  distribution: { typeId: string; count: number }[]
-): string {
-  if (!distribution.length) return 'currentColor';
-  const dominant = distribution.reduce((max, d) =>
-    d.count > max.count ? d : max
-  );
-  return mockItemTypes.find(t => t.id === dominant.typeId)?.color ?? 'currentColor';
-}
+import type { ItemTypeWithCount } from '@/lib/db/item-types';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Code,
@@ -57,8 +41,16 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Link: LinkIcon,
 };
 
-function getUserInitials() {
-  return mockUser.name
+function getDominantTypeColor(
+  distribution: { color: string; count: number }[]
+): string {
+  if (!distribution.length) return 'currentColor';
+  return distribution.reduce((max, d) => d.count > max.count ? d : max).color;
+}
+
+function getUserInitials(name: string | null): string {
+  if (!name) return '?';
+  return name
     .split(' ')
     .map((n: string) => n[0])
     .join('')
@@ -66,8 +58,48 @@ function getUserInitials() {
     .slice(0, 2);
 }
 
-function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?: () => void; onToggle?: () => void; showToggle?: boolean }) {
-  const initials = getUserInitials();
+export type SidebarUser = { name: string | null; email: string };
+export type SidebarFavCollection = { id: string; name: string; itemCount: number };
+export type SidebarFavItem = { id: string; title: string };
+export type SidebarRecentCollection = {
+  id: string;
+  name: string;
+  itemCount: number;
+  typeDistribution: { color: string; count: number }[];
+};
+export type SidebarRecentItem = {
+  id: string;
+  title: string;
+  itemType: { icon: string; color: string };
+};
+export type SidebarPinnedItem = { id: string; title: string };
+export type SidebarPinnedCollection = { id: string; name: string; itemCount: number };
+
+interface SidebarProps {
+  user: SidebarUser;
+  itemTypes: ItemTypeWithCount[];
+  pinnedCollections: SidebarPinnedCollection[];
+  pinnedItems: SidebarPinnedItem[];
+  favoriteCollections: SidebarFavCollection[];
+  favoriteItems: SidebarFavItem[];
+  recentCollections: SidebarRecentCollection[];
+  recentItems: SidebarRecentItem[];
+}
+
+function MiniSidebarContent({
+  itemTypes,
+  user,
+  onClose,
+  onToggle,
+  showToggle = true,
+}: {
+  itemTypes: ItemTypeWithCount[];
+  user: SidebarUser;
+  onClose?: () => void;
+  onToggle?: () => void;
+  showToggle?: boolean;
+}) {
+  const initials = getUserInitials(user.name);
 
   return (
     <div className='flex flex-col items-center h-full py-2'>
@@ -92,14 +124,14 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Pin className='h-4 w-4 shrink-0 fill-white text-white' />
+          <Pin className='h-4 w-4 shrink-0 fill-foreground text-foreground' />
         </Link>
 
         <div className='w-full border-t border-border my-1 shrink-0' />
 
         {/* Type icons */}
         <div className='flex flex-col items-center gap-0.5 w-full'>
-          {mockItemTypes.map(type => {
+          {itemTypes.map(type => {
             const Icon = ICON_MAP[type.icon];
             return (
               <Link
@@ -159,46 +191,29 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
   );
 }
 
-type SidebarFavCollection = { id: string; name: string; itemCount: number };
-
-function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void; favoriteCollections?: SidebarFavCollection[] }) {
+function SidebarContent({
+  user,
+  itemTypes,
+  pinnedCollections,
+  pinnedItems,
+  favoriteCollections,
+  favoriteItems,
+  recentCollections,
+  recentItems,
+  onClose,
+}: SidebarProps & { onClose?: () => void }) {
   const [pinnedOpen, setPinnedOpen] = useState(true);
   const [typesOpen, setTypesOpen] = useState(true);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
   const [recentOpen, setRecentOpen] = useState(true);
   const { toggleCollapsed } = useSidebar();
 
-  const pinnedCollection = [...mockCollections]
-    .filter(c => c.isPinned)
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 1);
-
-  const pinnedItem = [...mockItems]
-    .filter(i => i.isPinned)
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 1);
-
-  const recentFavCollections = favoriteCollections ?? [];
-
-  const recentFavItems = [...mockItems]
-    .filter(i => i.isFavorite)
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3);
-
-  const recentCollections = [...mockCollections]
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3);
-
-  const recentItems = [...mockItems]
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3);
-
-  const initials = getUserInitials();
+  const initials = getUserInitials(user.name);
   const handleToggle = onClose ?? toggleCollapsed;
 
   return (
     <div className='flex flex-col h-full overflow-hidden'>
-      {/* Sidebar header: Navigation label + collapse/close toggle */}
+      {/* Sidebar header */}
       <div className='flex items-center justify-between px-3 h-11 border-b border-border shrink-0'>
         <span className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Navigation</span>
         <Button
@@ -229,26 +244,26 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
 
           {pinnedOpen && (
             <div className='mt-1 space-y-0.5'>
-              {pinnedCollection.map(col => (
+              {pinnedCollections.map(col => (
                 <Link
                   key={col.id}
                   href={`/collections/${col.id}`}
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
-              {pinnedItem.map(item => (
+              {pinnedItems.map(item => (
                 <Link
                   key={item.id}
                   href={`/items/${item.id}`}
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
                   <span className='flex-1 truncate'>{item.title}</span>
                 </Link>
               ))}
@@ -273,12 +288,8 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
 
           {typesOpen && (
             <div className='mt-1 space-y-0.5'>
-              {mockItemTypes.map(type => {
+              {itemTypes.map(type => {
                 const Icon = ICON_MAP[type.icon];
-                const count =
-                  mockItemTypeCounts[
-                    type.name as keyof typeof mockItemTypeCounts
-                  ] ?? 0;
                 return (
                   <Link
                     key={type.id}
@@ -287,13 +298,10 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
                     className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                   >
                     {Icon && (
-                      <Icon
-                        className='h-4 w-4 shrink-0'
-                        style={{ color: type.color }}
-                      />
+                      <Icon className='h-4 w-4 shrink-0' style={{ color: type.color }} />
                     )}
                     <span className='flex-1 capitalize'>{type.name}s</span>
-                    <span className='text-xs text-muted-foreground'>{count}</span>
+                    <span className='text-xs text-muted-foreground'>{type.count}</span>
                   </Link>
                 );
               })}
@@ -318,7 +326,7 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
 
           {favoritesOpen && (
             <div className='mt-1 space-y-0.5'>
-              {recentFavCollections.map(col => (
+              {favoriteCollections.map(col => (
                 <Link
                   key={col.id}
                   href={`/collections/${col.id}`}
@@ -330,7 +338,7 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
-              {recentFavItems.map(item => (
+              {favoriteItems.map(item => (
                 <Link
                   key={item.id}
                   href={`/items/${item.id}`}
@@ -378,8 +386,7 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
                 </Link>
               ))}
               {recentItems.map(item => {
-                const type = mockItemTypes.find(t => t.id === item.itemTypeId);
-                const Icon = type ? ICON_MAP[type.icon] : null;
+                const Icon = ICON_MAP[item.itemType.icon];
                 return (
                   <Link
                     key={item.id}
@@ -388,7 +395,7 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
                     className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                   >
                     {Icon && (
-                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: type!.color }} />
+                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
                     )}
                     <span className='flex-1 truncate'>{item.title}</span>
                   </Link>
@@ -406,10 +413,8 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
             {initials}
           </div>
           <div className='flex-1 min-w-0'>
-            <p className='text-sm font-medium truncate'>{mockUser.name}</p>
-            <p className='text-xs text-muted-foreground truncate'>
-              {mockUser.email}
-            </p>
+            <p className='text-sm font-medium truncate'>{user.name ?? 'User'}</p>
+            <p className='text-xs text-muted-foreground truncate'>{user.email}</p>
           </div>
           <Button variant='ghost' size='icon' className='h-7 w-7 shrink-0'>
             <Settings className='h-4 w-4' />
@@ -420,27 +425,29 @@ function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void
   );
 }
 
-export default function Sidebar({ favoriteCollections }: { favoriteCollections?: SidebarFavCollection[] }) {
+export default function Sidebar(props: SidebarProps) {
   const { isCollapsed, isMobileOpen, closeMobile, toggleCollapsed, toggleMobile } = useSidebar();
 
   return (
     <>
-      {/* Desktop sidebar — full when expanded, mini (icons only) when collapsed */}
+      {/* Desktop sidebar */}
       <aside
         className={cn(
           'hidden lg:flex flex-col border-r border-border shrink-0 transition-[width] duration-200 overflow-hidden',
           isCollapsed ? 'w-12' : 'w-60'
         )}
       >
-        {isCollapsed ? <MiniSidebarContent onToggle={toggleCollapsed} /> : <SidebarContent favoriteCollections={favoriteCollections} />}
+        {isCollapsed
+          ? <MiniSidebarContent itemTypes={props.itemTypes} user={props.user} onToggle={toggleCollapsed} />
+          : <SidebarContent {...props} />}
       </aside>
 
-      {/* Mobile mini sidebar — always visible on < lg */}
+      {/* Mobile mini sidebar */}
       <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-sidebar'>
-        <MiniSidebarContent onToggle={toggleMobile} showToggle={!isMobileOpen} />
+        <MiniSidebarContent itemTypes={props.itemTypes} user={props.user} onToggle={toggleMobile} showToggle={!isMobileOpen} />
       </aside>
 
-      {/* Mobile drawer — slides in beside mini sidebar, starts below TopBar */}
+      {/* Mobile drawer */}
       <Sheet open={isMobileOpen} onOpenChange={closeMobile}>
         <SheetContent
           side='left'
@@ -450,7 +457,7 @@ export default function Sidebar({ favoriteCollections }: { favoriteCollections?:
           style={{ top: '3.5rem', height: 'calc(100dvh - 3.5rem)', width: '15rem' }}
         >
           <SheetTitle className='sr-only'>Navigation</SheetTitle>
-          <SidebarContent onClose={closeMobile} favoriteCollections={favoriteCollections} />
+          <SidebarContent {...props} onClose={closeMobile} />
         </SheetContent>
       </Sheet>
     </>

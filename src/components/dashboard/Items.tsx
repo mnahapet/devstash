@@ -2,21 +2,22 @@
 
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockItems } from '@/lib/mock-data';
+import type { ItemWithType } from '@/lib/db/items';
 import ItemRow from './ItemRow';
 import ItemCard from './ItemCard';
 import { useView } from './view-context';
 
 const PAGE_SIZE = 6;
 
-const sortedItems = [...mockItems]
-  .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+interface Props {
+  items: ItemWithType[];
+}
 
-export default function Items() {
+export default function Items({ items }: Props) {
   const { viewMode } = useView();
   const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(sortedItems.length / PAGE_SIZE);
-  const items = sortedItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.ceil(items.length / PAGE_SIZE);
+  const paged = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <section>
@@ -49,13 +50,13 @@ export default function Items() {
 
       {viewMode === 'list' ? (
         <div className='space-y-2'>
-          {items.map(item => (
+          {paged.map(item => (
             <ItemRow key={item.id} item={item} showTypeBorder />
           ))}
         </div>
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
-          {items.map(item => (
+          {paged.map(item => (
             <ItemCard key={item.id} item={item} />
           ))}
         </div>

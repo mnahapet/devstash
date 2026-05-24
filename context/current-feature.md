@@ -2,7 +2,7 @@
 
 <!-- Feature Name -->
 
-Dashboard Collections — Real Data
+Dashboard Items — Real Data
 
 ## Status
 
@@ -16,16 +16,8 @@ Completed
 
 ## Notes
 
-- Spec: @context/features/dashboard-collections-spec.md
-- Do not replace items data yet — collections only
-- Reference screenshot: @context/screenshots/dashboard-collections.JPG
-
-- Spec: @context/features/seed-spec.md
-- Overwrite existing `prisma/seed.ts` with the full seed script
-- Hash the demo user password with bcryptjs, 12 rounds
-- Use real URLs for link items
-- All system item types have `isSystem: true` and no `userId`
-- Use `upsert` where possible to make the seed idempotent
+- Spec: @context/features/dashboard-items-spec.md
+- Reference screenshot: @context/screenshots/dashboard-ui-items.JPG
 
 ## History
 
@@ -173,3 +165,22 @@ Completed
   - [x] Dashboard page derives top-3 favorite collections from already-fetched `collections` array (no extra DB query)
   - [x] Sidebar Favorites section renders real favorite collections with pink Heart icon and item count
   - [x] Heart color in sidebar set to `fill-pink-500 text-pink-500` matching dashboard card design
+- Dashboard Items — Real Data
+  - [x] Created `src/lib/db/items.ts` with `getItems(userId)` and `deriveItemStats(items)`
+  - [x] `ItemWithType` includes `inFavoriteCollection` computed from `ItemCollection → Collection.isFavorite`
+  - [x] `deriveItemStats` derives total and favorites counts from already-fetched array (no extra DB query)
+  - [x] Dashboard page fetches items in parallel with collections via `Promise.all`
+  - [x] `StatsCards` updated to accept real `itemStats` prop; mock data removed
+  - [x] `Items` component updated to accept `ItemWithType[]` prop; mock data removed
+  - [x] `PinnedItems`, `FavoriteItems`, `RecentCarousel` updated to accept real data props; mock data removed
+  - [x] `ItemCard` and `ItemRow`: heart icon driven by `inFavoriteCollection`, star by `isFavorite`
+  - [x] Dashboard page derives pinned/favorite/recent subsets from fetched arrays (no extra DB queries)
+  - [x] Hydration mismatch fixed: `timeZone: 'UTC'` added to all `toLocaleDateString` calls in item card/row components
+- Sidebar — Real Data
+  - [x] Created `src/lib/db/item-types.ts` with `getItemTypesWithCounts(userId)` — fetches all system types with per-type item count in two parallel queries
+  - [x] `Sidebar` fully typed via props: `user`, `itemTypes`, `pinnedCollections`, `pinnedItems`, `favoriteCollections`, `favoriteItems`, `recentCollections`, `recentItems`
+  - [x] All mock data imports removed from `Sidebar.tsx`
+  - [x] `getDominantTypeColor` reads `color` directly from `typeDistribution` — no mock type lookup
+  - [x] Dashboard page fetches `itemTypes` in `Promise.all` alongside collections and items
+  - [x] All sidebar subsets derived from already-fetched arrays — no extra DB queries
+  - [x] User name and email in sidebar footer sourced from DB user record
