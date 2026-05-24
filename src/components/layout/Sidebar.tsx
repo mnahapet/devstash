@@ -8,7 +8,7 @@ import {
   Terminal,
   StickyNote,
   File,
-  FolderOpen,
+
   Image,
   Link as LinkIcon,
   ChevronDown,
@@ -136,7 +136,7 @@ function MiniSidebarContent({
             return (
               <Link
                 key={type.id}
-                href={`/items/${type.name}s`}
+                href={`/items/${type.name}`}
                 title={`${type.name}s`}
                 onClick={onClose}
                 className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors'
@@ -204,8 +204,8 @@ function SidebarContent({
 }: SidebarProps & { onClose?: () => void }) {
   const [pinnedOpen, setPinnedOpen] = useState(true);
   const [typesOpen, setTypesOpen] = useState(true);
-  const [favoritesOpen, setFavoritesOpen] = useState(true);
-  const [recentOpen, setRecentOpen] = useState(true);
+  const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const [itemsOpen, setItemsOpen] = useState(true);
   const { toggleCollapsed } = useSidebar();
 
   const initials = getUserInitials(user.name);
@@ -251,30 +251,22 @@ function SidebarContent({
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <FolderOpen
-                    className='h-3.5 w-3.5 shrink-0'
-                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
-                  />
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
-              {pinnedItems.map(item => {
-                const Icon = ICON_MAP[item.itemType.icon];
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/items/${item.id}`}
-                    onClick={onClose}
-                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                  >
-                    {Icon && (
-                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
-                    )}
-                    <span className='flex-1 truncate'>{item.title}</span>
-                  </Link>
-                );
-              })}
+              {pinnedItems.map(item => (
+                <Link
+                  key={item.id}
+                  href={`/items/${item.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <span className='flex-1 truncate'>{item.title}</span>
+                </Link>
+              ))}
             </div>
           )}
         </div>
@@ -301,7 +293,7 @@ function SidebarContent({
                 return (
                   <Link
                     key={type.id}
-                    href={`/items/${type.name}s`}
+                    href={`/items/${type.name}`}
                     onClick={onClose}
                     className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                   >
@@ -317,106 +309,145 @@ function SidebarContent({
           )}
         </div>
 
-        {/* Favorites */}
+        {/* Collections */}
         <div className='mt-4 pt-2 border-t border-border'>
           <button
-            onClick={() => setFavoritesOpen(prev => !prev)}
+            onClick={() => setCollectionsOpen(prev => !prev)}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
-            Favorites
+            Collections
             <ChevronDown
               className={cn(
                 'h-3.5 w-3.5 transition-transform duration-150',
-                !favoritesOpen && '-rotate-90'
+                !collectionsOpen && '-rotate-90'
               )}
             />
           </button>
 
-          {favoritesOpen && (
-            <div className='mt-1 space-y-0.5'>
-              {favoriteCollections.map(col => (
-                <Link
-                  key={col.id}
-                  href={`/collections/${col.id}`}
-                  onClick={onClose}
-                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                >
-                  <FolderOpen
-                    className='h-3.5 w-3.5 shrink-0'
-                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
-                  />
-                  <span className='flex-1 truncate'>{col.name}</span>
-                  <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
-                </Link>
-              ))}
-              {favoriteItems.map(item => {
-                const Icon = ICON_MAP[item.itemType.icon];
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/items/${item.id}`}
-                    onClick={onClose}
-                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                  >
-                    {Icon && (
-                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
-                    )}
-                    <span className='flex-1 truncate'>{item.title}</span>
-                  </Link>
-                );
-              })}
+          {collectionsOpen && (
+            <div className='mt-1'>
+              {/* Favorites subgroup */}
+              {favoriteCollections.length > 0 && (
+                <>
+                  <p className='px-2 py-1 text-xs text-muted-foreground'>Favorites</p>
+                  <div className='space-y-0.5 mb-2'>
+                    {favoriteCollections.map(col => (
+                      <Link
+                        key={col.id}
+                        href={`/collections/${col.id}`}
+                        onClick={onClose}
+                        className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                      >
+                        <Heart className='h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500' />
+                        <span className='flex-1 truncate'>{col.name}</span>
+                        <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* Recent subgroup */}
+              {recentCollections.length > 0 && (
+                <>
+                  <p className='px-2 py-1 text-xs text-muted-foreground'>Recent</p>
+                  <div className='space-y-0.5'>
+                    {recentCollections.map(col => (
+                      <Link
+                        key={col.id}
+                        href={`/collections/${col.id}`}
+                        onClick={onClose}
+                        className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                      >
+                        <div
+                          className='h-2.5 w-2.5 rounded-full shrink-0'
+                          style={{ backgroundColor: getDominantTypeColor(col.typeDistribution) }}
+                        />
+                        <span className='flex-1 truncate'>{col.name}</span>
+                        <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {/* View all */}
+              <Link
+                href='/collections'
+                onClick={onClose}
+                className='flex items-center px-2 py-1.5 mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors'
+              >
+                View all
+              </Link>
             </div>
           )}
         </div>
 
-        {/* Recent */}
+        {/* Items */}
         <div className='mt-4 pt-2 border-t border-border'>
           <button
-            onClick={() => setRecentOpen(prev => !prev)}
+            onClick={() => setItemsOpen(prev => !prev)}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
-            Recent
+            Items
             <ChevronDown
               className={cn(
                 'h-3.5 w-3.5 transition-transform duration-150',
-                !recentOpen && '-rotate-90'
+                !itemsOpen && '-rotate-90'
               )}
             />
           </button>
 
-          {recentOpen && (
-            <div className='mt-1 space-y-0.5'>
-              {recentCollections.map(col => (
-                <Link
-                  key={col.id}
-                  href={`/collections/${col.id}`}
-                  onClick={onClose}
-                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                >
-                  <FolderOpen
-                    className='h-3.5 w-3.5 shrink-0'
-                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
-                  />
-                  <span className='flex-1 truncate'>{col.name}</span>
-                  <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
-                </Link>
-              ))}
-              {recentItems.map(item => {
-                const Icon = ICON_MAP[item.itemType.icon];
-                return (
-                  <Link
-                    key={item.id}
-                    href={`/items/${item.id}`}
-                    onClick={onClose}
-                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                  >
-                    {Icon && (
-                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: item.itemType.color }} />
-                    )}
-                    <span className='flex-1 truncate'>{item.title}</span>
-                  </Link>
-                );
-              })}
+          {itemsOpen && (
+            <div className='mt-1'>
+              {favoriteItems.length > 0 && (
+                <>
+                  <p className='px-2 py-1 text-xs text-muted-foreground'>Favorites</p>
+                  <div className='space-y-0.5 mb-2'>
+                    {favoriteItems.map(item => (
+                      <Link
+                        key={item.id}
+                        href={`/items/${item.id}`}
+                        onClick={onClose}
+                        className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                      >
+                        <Star className='h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400' />
+                        <span className='flex-1 truncate'>{item.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {recentItems.length > 0 && (
+                <>
+                  <p className='px-2 py-1 text-xs text-muted-foreground'>Recent</p>
+                  <div className='space-y-0.5'>
+                    {recentItems.map(item => (
+                      <Link
+                        key={item.id}
+                        href={`/items/${item.id}`}
+                        onClick={onClose}
+                        className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                      >
+                        <div
+                          className='h-2.5 w-2.5 rounded-full shrink-0'
+                          style={{ backgroundColor: item.itemType.color }}
+                        />
+                        <span className='flex-1 truncate'>{item.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <Link
+                href='/items'
+                onClick={onClose}
+                className='flex items-center px-2 py-1.5 mt-1 text-xs text-muted-foreground hover:text-foreground transition-colors'
+              >
+                View all
+              </Link>
             </div>
           )}
         </div>

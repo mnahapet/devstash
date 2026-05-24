@@ -191,3 +191,10 @@ Completed
   - [x] Skeleton main content matches dashboard layout: heading, stats cards, 2 carousels, 2 grids
   - [x] `loader-spinner` keyframe animation added to `globals.css`
   - [x] View mode (list/grid) persisted to `localStorage` under `devstash:viewMode`
+- Sidebar navigation refactor
+  - [x] Item type links updated to `/items/[typename]` (singular); labels shown in plural form (e.g. "Snippets")
+  - [x] COLLECTIONS group added with Recent (colored dot) and Favorites (filled pink Heart) subgroups + "View all" link
+  - [x] ITEMS group added with Recent (colored dot) and Favorites (filled yellow Star) subgroups + "View all" link
+  - [x] PINNED group: both collections and items now show filled white Pin icon instead of type icon
+  - [x] All sidebar subsets (pinned, favorites, recent) sorted by `updatedAt` desc — most recently updated shown first
+  - [x] `stats-sidebar-spec.md` updated to reflect current implementation

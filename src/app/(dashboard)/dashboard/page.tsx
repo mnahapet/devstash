@@ -30,29 +30,35 @@ export default async function DashboardPage() {
 
   const pinnedCollections = collections
     .filter(c => c.isPinned)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 1)
     .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const pinnedItems = items
     .filter(i => i.isPinned)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 1)
     .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
   const favoriteSidebarCollections = collections
     .filter(c => c.isFavorite)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const favoriteItems = items
     .filter(i => i.isFavorite)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
   const recentCollections = collections
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const recentItems = items
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
