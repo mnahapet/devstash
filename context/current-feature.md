@@ -48,3 +48,10 @@ Completed
   - [x] Styled thin scrollbar on main content area matching sidebar scrollbar
 - Sidebar collection folder icon colored by dominant item type
   - [x] Folder icons in "All Collections" sidebar section are colored with the dominant item type color (highest count in typeDistribution)
+- Mobile UX improvements & scrollbar polish
+  - [x] Mobile search bar expands inline in TopBar (replaces header content) with autoFocus, Escape to close, X close icon, theme toggle at right edge
+  - [x] Logo and sidebar toggle remain visible when mobile search is open
+  - [x] Mini sidebar (icons only, 48px) always visible on mobile < lg breakpoint with item type icons and user initials
+  - [x] Mobile drawer starts below TopBar (top-14 offset) so TopBar is never covered
+  - [x] Sidebar collapse animation scoped to transition-[width] to prevent TopBar flicker
+  - [x] Scrollbars reworked: theme-aware rgba thumb colors (light/dark mode), 6px width, transparent track, consistent appearance across sidebar and main area
