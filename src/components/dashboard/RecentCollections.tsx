@@ -140,7 +140,10 @@ export default function RecentCollections() {
                 <div className='w-0.5 shrink-0' style={{ background: gradient }} />
                 <div className='flex-1 p-4 min-w-0'>
                   <div className='flex items-start justify-between gap-2'>
-                    <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
+                    <div className='flex items-center gap-1.5'>
+                      <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
+                      <span className='text-xs text-muted-foreground'>{col.itemCount} items</span>
+                    </div>
                     <div className='flex items-center gap-1 shrink-0'>
                       {col.isFavorite && <Heart className='h-3.5 w-3.5 fill-pink-500 text-pink-500' />}
                       {col.isFavorite && <Star className='h-3.5 w-3.5 fill-yellow-400 text-yellow-400' />}
@@ -154,7 +157,6 @@ export default function RecentCollections() {
                   >
                     {col.name}
                   </Link>
-                  <p className='mt-1 text-xs text-muted-foreground'>{col.itemCount} items</p>
 
                   {col.description && (
                     <p className='text-xs text-muted-foreground mt-2 line-clamp-2'>

@@ -74,7 +74,7 @@ export default function ItemCard({ item }: { item: Item }) {
         </p>
       )}
 
-      <div className='mt-auto pt-2 flex items-end justify-between gap-2'>
+      <div className='mt-2 flex items-end justify-between gap-2'>
         {item.tags.length > 0 && (
           <div className='flex flex-wrap gap-1'>
             {item.tags.slice(0, 2).map(tag => (

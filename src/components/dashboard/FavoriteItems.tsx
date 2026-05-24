@@ -69,14 +69,16 @@ function CollectionCard({ col }: { col: typeof favoriteCollections[0] }) {
       <div className='w-0.5 shrink-0' style={{ background: gradient }} />
       <div className='flex-1 p-4 min-w-0'>
         <div className='flex items-start justify-between gap-2'>
-          <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
+          <div className='flex items-center gap-1.5'>
+            <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
+            <span className='text-xs text-muted-foreground'>{col.itemCount} items</span>
+          </div>
           <div className='flex items-center gap-1 shrink-0'>
             <Star className='h-3.5 w-3.5 fill-yellow-400 text-yellow-400' />
             {col.isPinned && <Pin className='h-3.5 w-3.5 fill-white text-white' />}
           </div>
         </div>
         <p className='mt-2 font-semibold text-sm line-clamp-2'>{col.name}</p>
-        <p className='mt-1 text-xs text-muted-foreground'>{col.itemCount} items</p>
         {col.description && (
           <p className='mt-2 text-xs text-muted-foreground line-clamp-2'>{col.description}</p>
         )}
@@ -120,7 +122,7 @@ function ItemCard({ item }: { item: typeof favoriteItems[0] }) {
       {item.description && (
         <p className='mt-2 text-xs text-muted-foreground line-clamp-2'>{item.description}</p>
       )}
-      <div className='mt-auto pt-2 flex items-end justify-between gap-2'>
+      <div className='mt-2 flex items-end justify-between gap-2'>
         {item.tags.length > 0 && (
           <div className='flex flex-wrap gap-1'>
             {item.tags.slice(0, 2).map(tag => (
