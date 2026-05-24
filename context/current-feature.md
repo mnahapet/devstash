@@ -184,3 +184,10 @@ Completed
   - [x] Dashboard page fetches `itemTypes` in `Promise.all` alongside collections and items
   - [x] All sidebar subsets derived from already-fetched arrays — no extra DB queries
   - [x] User name and email in sidebar footer sourced from DB user record
+- Dashboard loading state & UX polish
+  - [x] `src/app/(dashboard)/dashboard/loading.tsx` added — Next.js App Router loading convention shown during data fetch
+  - [x] Colorful conic-gradient ring spinner (all 7 type colors) centered over skeleton content via absolute overlay
+  - [x] Skeleton sidebar on desktop mirrors real sidebar structure (types, favorites, collections, footer)
+  - [x] Skeleton main content matches dashboard layout: heading, stats cards, 2 carousels, 2 grids
+  - [x] `loader-spinner` keyframe animation added to `globals.css`
+  - [x] View mode (list/grid) persisted to `localStorage` under `devstash:viewMode`

@@ -161,3 +161,21 @@
 .main-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 0, 0, 0.28); }
 .dark .main-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.20); }
 .dark .main-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.40); }
+
+/* Colorful spinner */
+@keyframes loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-spinner {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #3b82f6, #8b5cf6, #f97316, #fde047, #ec4899, #10b981, #3b82f6
+  );
+  animation: loader-spin 1.2s linear infinite;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+          mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+}
