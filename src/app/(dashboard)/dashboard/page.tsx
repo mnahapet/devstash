@@ -19,8 +19,8 @@ export default function DashboardPage() {
           </div>
 
           <StatsCards />
-          <RecentCollections />
           <PinnedItems />
+          <RecentCollections />
           <RecentItems />
         </div>
       </main>
