@@ -117,3 +117,9 @@ Completed
   - [x] Item list rows: Heart + Star + Pin shown inline next to title; description spacing increased to mt-1.5
   - [x] ItemCard grid: icon reduced to h-5 w-5, description spacing mt-1 → mt-2
   - [x] ItemRow description spacing mt-0.5 → mt-1.5
+- Dashboard card layout refinements
+  - [x] Item cards (grid): tags/date row pinned to bottom with mt-auto pt-3; spacing between description and tags matches pt-3 used before collection type icons
+  - [x] Item cards (list): tags spacing from description increased to mt-3 for consistency with grid
+  - [x] Collection cards (grid): item count moved inline next to folder icon in top row instead of separate line below title
+  - [x] Collection cards (grid): type icons pinned to bottom with mt-auto pt-3 (flex flex-col added to inner content div)
+  - [x] Tags: hover state added (bg-accent text-foreground with transition) across grid and list modes

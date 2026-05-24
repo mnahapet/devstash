@@ -138,7 +138,7 @@ export default function RecentCollections() {
                 className='group flex rounded-lg border border-border bg-card overflow-hidden hover:border-border/60 hover:bg-accent/20 transition-colors cursor-pointer'
               >
                 <div className='w-0.5 shrink-0' style={{ background: gradient }} />
-                <div className='flex-1 p-4 min-w-0'>
+                <div className='flex flex-col flex-1 p-4 min-w-0'>
                   <div className='flex items-start justify-between gap-2'>
                     <div className='flex items-center gap-1.5'>
                       <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
@@ -165,7 +165,7 @@ export default function RecentCollections() {
                   )}
 
                   {typeIcons.length > 0 && (
-                    <div className='flex items-center gap-2 mt-3'>
+                    <div className='flex items-center gap-2 mt-auto pt-3'>
                       {typeIcons.map(type => {
                         if (!type) return null;
                         const Icon = ICON_MAP[type.icon];

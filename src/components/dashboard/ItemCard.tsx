@@ -74,13 +74,13 @@ export default function ItemCard({ item }: { item: Item }) {
         </p>
       )}
 
-      <div className='mt-2 flex items-end justify-between gap-2'>
+      <div className='mt-auto pt-3 flex items-end justify-between gap-2'>
         {item.tags.length > 0 && (
           <div className='flex flex-wrap gap-1'>
             {item.tags.slice(0, 2).map(tag => (
               <span
                 key={tag}
-                className='px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground'
+                className='px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors'
               >
                 {tag}
               </span>

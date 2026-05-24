@@ -70,11 +70,11 @@ export default function ItemRow({ item, showTypeBorder = false }: { item: Item; 
           </p>
         )}
         {item.tags.length > 0 && (
-          <div className='flex flex-wrap gap-1 mt-2'>
+          <div className='flex flex-wrap gap-1 mt-3'>
             {item.tags.map(tag => (
               <span
                 key={tag}
-                className='px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground'
+                className='px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground hover:bg-accent hover:text-foreground transition-colors'
               >
                 {tag}
               </span>
