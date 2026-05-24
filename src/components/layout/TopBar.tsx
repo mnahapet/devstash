@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +13,7 @@ import {
   LayoutGrid,
   List,
   FolderPlus,
+  X,
 } from 'lucide-react';
 import { useSidebar } from './sidebar-context';
 import { useTheme } from './theme-context';
@@ -22,9 +24,77 @@ export default function TopBar() {
   const { toggleCollapsed, toggleMobile } = useSidebar();
   const { theme, toggleTheme } = useTheme();
   const { viewMode, setViewMode } = useView();
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  function openMobileSearch() {
+    setMobileSearchOpen(true);
+  }
+
+  function closeMobileSearch() {
+    setMobileSearchOpen(false);
+  }
+
+  if (mobileSearchOpen) {
+    return (
+      <header className='relative z-10 flex items-center gap-2 px-4 h-14 border-b border-border shrink-0'>
+        {/* Left: logo + sidebar toggle */}
+        <div className='flex items-center gap-2 shrink-0'>
+          <div className='flex items-center justify-center h-7 w-7 rounded-sm bg-linear-to-br from-violet-500 to-indigo-700'>
+            <Layers className='h-4 w-4 text-white' />
+          </div>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+            onClick={toggleMobile}
+            aria-label='Open sidebar'
+          >
+            <PanelLeft className='h-4 w-4' />
+          </Button>
+        </div>
+
+        {/* Search input */}
+        <div className='relative flex-1'>
+          <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+          <Input
+            autoFocus
+            placeholder='Search items...'
+            className='pl-9 bg-muted border-0 w-full'
+            onKeyDown={(e) => e.key === 'Escape' && closeMobileSearch()}
+          />
+        </div>
+
+        {/* Right: close + theme toggle */}
+        <div className='flex items-center gap-1 shrink-0'>
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={closeMobileSearch}
+            className='h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent dark:hover:bg-white/10 transition-colors'
+            aria-label='Close search'
+          >
+            <X className='h-4 w-4' />
+          </Button>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+            onClick={toggleTheme}
+            aria-label='Toggle theme'
+          >
+            {theme === 'dark' ? (
+              <Sun className='h-4 w-4' />
+            ) : (
+              <Moon className='h-4 w-4' />
+            )}
+          </Button>
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <header className='flex items-center gap-2 px-4 h-14 border-b border-border shrink-0'>
+    <header className='relative z-10 flex items-center gap-2 px-4 h-14 border-b border-border shrink-0'>
       {/* Left: logo + sidebar toggle */}
       <div className='flex items-center gap-2 shrink-0'>
         <div className='flex items-center justify-center h-7 w-7 rounded-sm bg-linear-to-br from-violet-500 to-indigo-700'>
@@ -68,7 +138,13 @@ export default function TopBar() {
       {/* Right: controls */}
       <div className='flex items-center gap-1.5 ml-auto shrink-0'>
         {/* Mobile search icon */}
-        <Button variant='ghost' size='icon' className='sm:hidden h-8 w-8 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='sm:hidden h-8 w-8 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+          onClick={openMobileSearch}
+          aria-label='Search'
+        >
           <Search className='h-4 w-4' />
         </Button>
 

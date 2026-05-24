@@ -199,6 +199,43 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   );
 }
 
+function MiniSidebar() {
+  const initials = mockUser.name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2);
+
+  return (
+    <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-sidebar py-2'>
+      <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center gap-0.5 w-full px-1.5'>
+        {mockItemTypes.map(type => {
+          const Icon = ICON_MAP[type.icon];
+          return (
+            <Link
+              key={type.id}
+              href={`/items/${type.name}s`}
+              title={`${type.name}s`}
+              className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors'
+            >
+              {Icon && (
+                <Icon className='h-4 w-4 shrink-0' style={{ color: type.color }} />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className='shrink-0 pt-2 border-t border-border w-full flex justify-center'>
+        <div className='flex items-center justify-center h-8 w-8 rounded-full bg-muted text-xs font-semibold'>
+          {initials}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
 export default function Sidebar() {
   const { isCollapsed, isMobileOpen, closeMobile } = useSidebar();
 
@@ -207,16 +244,24 @@ export default function Sidebar() {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'hidden lg:flex flex-col border-r border-border shrink-0 transition-all duration-200 overflow-hidden',
+          'hidden lg:flex flex-col border-r border-border shrink-0 transition-[width] duration-200 overflow-hidden',
           isCollapsed ? 'w-0 border-0' : 'w-60'
         )}
       >
         <SidebarContent />
       </aside>
 
-      {/* Mobile drawer */}
+      {/* Mobile mini sidebar — always visible on < lg */}
+      <MiniSidebar />
+
+      {/* Mobile drawer — full sidebar via hamburger, starts below TopBar */}
       <Sheet open={isMobileOpen} onOpenChange={closeMobile}>
-        <SheetContent side='left' className='p-0 gap-0 w-60'>
+        <SheetContent
+          side='left'
+          className='p-0 gap-0 w-60'
+          overlayClassName='top-14'
+          style={{ top: '3.5rem', height: 'calc(100dvh - 3.5rem)' }}
+        >
           <SheetTitle className='sr-only'>Navigation</SheetTitle>
           <SidebarContent onClose={closeMobile} />
         </SheetContent>
