@@ -1,12 +1,8 @@
 # Current feature
 
-<!-- Feature Name -->
-
-Seed Data - Populate the database with a demo user, system item types, and sample collections and items for development and demos.
+Dashboard card & carousel polish
 
 ## Status
-
-<!-- Not Started|In Progress|Completed -->
 
 Completed
 
@@ -108,3 +104,16 @@ Completed
   - [x] Dashboard Pinned section moved before Collections, shows all pinned collections then items as horizontal carousel
   - [x] Carousel has left/right arrow buttons, dot indicators, and active card highlighted with white ring on all sides
   - [x] Pinned carousel uses shadcn Carousel (Embla) with custom arrow buttons in header and dot indicators; active card highlighted with ring-1 ring-white/50
+- Dashboard card & carousel polish
+  - [x] Favorites carousel added to main dashboard area (between Pinned and Collections), showing all favorite collections then items, with filled pink Heart icon before "FAVORITES" title
+  - [x] Collection cards (all sections): colored FolderOpen icon in top-left (dominant item type color), status icons grouped in top-right, title below, item count below title, description below count
+  - [x] Item cards (all sections): small tinted type icon in top-left (h-5 w-5), status icons grouped in top-right, title below, description below with mt-2 spacing
+  - [x] Status icons shown for both collections and items: Heart (pink, filled) + Star (yellow, filled) if isFavorite; Pin (white, filled) if isPinned
+  - [x] Favorites carousel cards omit Heart icon (redundant in that section); Pinned carousel cards omit Pin icon
+  - [x] MoreHorizontal (…) menu button removed from all collection cards across all sections
+  - [x] Collections section renamed from "Recent Collections" to "Collections"; shows all collections sorted by updatedAt descending (no slice limit)
+  - [x] Items section renamed from "Recent Items" to "Items" with Clock icon removed; shows all items sorted by updatedAt descending (no slice limit)
+  - [x] Collections list row restructured to match item row: FolderOpen icon left, name + Heart/Star/Pin inline, description below, item count below description
+  - [x] Item list rows: Heart + Star + Pin shown inline next to title; description spacing increased to mt-1.5
+  - [x] ItemCard grid: icon reduced to h-5 w-5, description spacing mt-1 → mt-2
+  - [x] ItemRow description spacing mt-0.5 → mt-1.5

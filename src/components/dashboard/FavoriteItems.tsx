@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import {
-  Pin, Star, Heart, ChevronLeft, ChevronRight,
+  Heart, Star, Pin, ChevronLeft, ChevronRight,
   FolderOpen, Code, Sparkles, Terminal, StickyNote, File, Image,
   Link as LinkIcon, type LucideIcon,
 } from 'lucide-react';
@@ -41,24 +41,24 @@ function buildGradient(distribution: { typeId: string; count: number }[]): strin
   return `linear-gradient(to bottom, ${stops.join(', ')})`;
 }
 
-const pinnedCollections = [...mockCollections]
-  .filter(c => c.isPinned)
+const favoriteCollections = [...mockCollections]
+  .filter(c => c.isFavorite)
   .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-const pinnedItems = [...mockItems]
-  .filter(i => i.isPinned)
+const favoriteItems = [...mockItems]
+  .filter(i => i.isFavorite)
   .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-type PinnedCard =
-  | { kind: 'collection'; data: typeof pinnedCollections[0] }
-  | { kind: 'item'; data: typeof pinnedItems[0] };
+type FavoriteCard =
+  | { kind: 'collection'; data: typeof favoriteCollections[0] }
+  | { kind: 'item'; data: typeof favoriteItems[0] };
 
-const allPinned: PinnedCard[] = [
-  ...pinnedCollections.map(c => ({ kind: 'collection' as const, data: c })),
-  ...pinnedItems.map(i => ({ kind: 'item' as const, data: i })),
+const allFavorites: FavoriteCard[] = [
+  ...favoriteCollections.map(c => ({ kind: 'collection' as const, data: c })),
+  ...favoriteItems.map(i => ({ kind: 'item' as const, data: i })),
 ];
 
-function CollectionCard({ col }: { col: typeof pinnedCollections[0] }) {
+function CollectionCard({ col }: { col: typeof favoriteCollections[0] }) {
   const gradient = buildGradient(col.typeDistribution);
   const typeIcons = col.typeDistribution
     .map(({ typeId }) => mockItemTypes.find(t => t.id === typeId))
@@ -71,8 +71,8 @@ function CollectionCard({ col }: { col: typeof pinnedCollections[0] }) {
         <div className='flex items-start justify-between gap-2'>
           <FolderOpen className='h-4 w-4 shrink-0' style={{ color: getDominantTypeColor(col.typeDistribution) }} />
           <div className='flex items-center gap-1 shrink-0'>
-            {col.isFavorite && <Heart className='h-3.5 w-3.5 fill-pink-500 text-pink-500' />}
-            {col.isFavorite && <Star className='h-3.5 w-3.5 fill-yellow-400 text-yellow-400' />}
+            <Star className='h-3.5 w-3.5 fill-yellow-400 text-yellow-400' />
+            {col.isPinned && <Pin className='h-3.5 w-3.5 fill-white text-white' />}
           </div>
         </div>
         <p className='mt-2 font-semibold text-sm line-clamp-2'>{col.name}</p>
@@ -94,7 +94,7 @@ function CollectionCard({ col }: { col: typeof pinnedCollections[0] }) {
   );
 }
 
-function ItemCard({ item }: { item: typeof pinnedItems[0] }) {
+function ItemCard({ item }: { item: typeof favoriteItems[0] }) {
   const itemType = mockItemTypes.find(t => t.id === item.itemTypeId);
   const Icon = itemType ? ICON_MAP[itemType.icon] : null;
   const date = item.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -112,8 +112,8 @@ function ItemCard({ item }: { item: typeof pinnedItems[0] }) {
           {Icon && <Icon className='h-3 w-3' style={{ color: itemType?.color }} />}
         </div>
         <div className='flex items-center gap-1 shrink-0'>
-          {item.isFavorite && <Heart className='h-3 w-3 fill-pink-500 text-pink-500' />}
-          {item.isFavorite && <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />}
+          <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />
+          {item.isPinned && <Pin className='h-3 w-3 fill-white text-white' />}
         </div>
       </div>
       <p className='mt-2 font-medium text-sm leading-snug line-clamp-2'>{item.title}</p>
@@ -136,12 +136,12 @@ function ItemCard({ item }: { item: typeof pinnedItems[0] }) {
   );
 }
 
-export default function PinnedItems() {
+export default function FavoriteItems() {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
-  const total = allPinned.length;
+  const total = allFavorites.length;
 
   useEffect(() => {
     if (!api) return;
@@ -161,8 +161,8 @@ export default function PinnedItems() {
     <section>
       <div className='flex items-center justify-between mb-3'>
         <div className='flex items-center gap-2'>
-          <Pin className='h-3.5 w-3.5 fill-white text-white' />
-          <h2 className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>Pinned</h2>
+          <Heart className='h-3.5 w-3.5 fill-pink-500 text-pink-500' />
+          <h2 className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>Favorites</h2>
         </div>
         <div className='flex items-center gap-1'>
           <button
@@ -192,7 +192,7 @@ export default function PinnedItems() {
 
       <Carousel setApi={setApi} opts={{ align: 'start', loop: false }} className='w-full'>
         <CarouselContent className='-ml-3'>
-          {allPinned.map((card, i) => (
+          {allFavorites.map((card, i) => (
             <CarouselItem key={i} className='pl-3 sm:basis-1/2 lg:basis-1/3'>
               <div className={cn('h-full rounded-lg transition-all duration-200', i === current ? 'ring-1 ring-white/50' : '')}>
                 {card.kind === 'collection'
@@ -206,7 +206,7 @@ export default function PinnedItems() {
 
       {total > 1 && (
         <div className='flex justify-center gap-1.5 mt-3'>
-          {allPinned.map((_, i) => (
+          {allFavorites.map((_, i) => (
             <button
               key={i}
               onClick={() => api?.scrollTo(i)}

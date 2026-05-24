@@ -8,6 +8,7 @@ import {
   Link as LinkIcon,
   Star,
   Pin,
+  Heart,
   type LucideIcon,
 } from 'lucide-react';
 import { mockItemTypes } from '@/lib/mock-data';
@@ -59,15 +60,12 @@ export default function ItemRow({ item, showTypeBorder = false }: { item: Item; 
       <div className='flex-1 min-w-0'>
         <div className='flex items-center gap-1.5'>
           <span className='font-medium text-sm truncate'>{item.title}</span>
-          {item.isFavorite && (
-            <Star className='h-3 w-3 shrink-0 fill-yellow-400 text-yellow-400' />
-          )}
-          {item.isPinned && (
-            <Pin className='h-3 w-3 shrink-0 text-muted-foreground' />
-          )}
+          {item.isFavorite && <Heart className='h-3 w-3 shrink-0 fill-pink-500 text-pink-500' />}
+          {item.isFavorite && <Star className='h-3 w-3 shrink-0 fill-yellow-400 text-yellow-400' />}
+          {item.isPinned && <Pin className='h-3 w-3 shrink-0 fill-white text-white' />}
         </div>
         {item.description && (
-          <p className='text-xs text-muted-foreground mt-0.5 truncate'>
+          <p className='text-xs text-muted-foreground mt-2 truncate'>
             {item.description}
           </p>
         )}

@@ -8,6 +8,7 @@ import {
   Link as LinkIcon,
   Star,
   Pin,
+  Heart,
   type LucideIcon,
 } from 'lucide-react';
 import { mockItemTypes } from '@/lib/mock-data';
@@ -49,20 +50,17 @@ export default function ItemCard({ item }: { item: Item }) {
     >
       <div className='flex items-start justify-between gap-2'>
         <div
-          className='flex items-center justify-center h-7 w-7 rounded-md shrink-0'
+          className='flex items-center justify-center h-5 w-5 rounded shrink-0'
           style={{ backgroundColor: itemType ? `${itemType.color}20` : undefined }}
         >
           {Icon && (
-            <Icon className='h-3.5 w-3.5' style={{ color: itemType?.color }} />
+            <Icon className='h-3 w-3' style={{ color: itemType?.color }} />
           )}
         </div>
         <div className='flex items-center gap-1'>
-          {item.isFavorite && (
-            <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />
-          )}
-          {item.isPinned && (
-            <Pin className='h-3 w-3 text-muted-foreground' />
-          )}
+          {item.isFavorite && <Heart className='h-3 w-3 fill-pink-500 text-pink-500' />}
+          {item.isFavorite && <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />}
+          {item.isPinned && <Pin className='h-3 w-3 fill-white text-white' />}
         </div>
       </div>
 
@@ -71,7 +69,7 @@ export default function ItemCard({ item }: { item: Item }) {
       </p>
 
       {item.description && (
-        <p className='mt-1 text-xs text-muted-foreground line-clamp-2'>
+        <p className='mt-2 text-xs text-muted-foreground line-clamp-2'>
           {item.description}
         </p>
       )}
