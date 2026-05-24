@@ -2,7 +2,7 @@
 
 <!-- Feature Name -->
 
-Prisma + Neon PostgreSQL Setup - Configure Prisma 7 ORM with Neon serverless PostgreSQL, create initial schema, and seed system item types.
+Seed Data - Populate the database with a demo user, system item types, and sample collections and items for development and demos.
 
 ## Status
 
@@ -18,11 +18,12 @@ Completed
 
 <!-- Any extra notes -->
 
-- Spec: @context/features/database-spec.md
-- Schema reference: @context/project-overview.md (Prisma Schema section)
-- Use Prisma 7 — has breaking changes, review upgrade guide before installing
-- ALWAYS use `prisma migrate dev` for schema changes, NEVER `prisma db push`
-- DATABASE_URL should point to the Neon development branch
+- Spec: @context/features/seed-spec.md
+- Overwrite existing `prisma/seed.ts` with the full seed script
+- Hash the demo user password with bcryptjs, 12 rounds
+- Use real URLs for link items
+- All system item types have `isSystem: true` and no `userId`
+- Use `upsert` where possible to make the seed idempotent
 
 ## History
 
@@ -75,3 +76,12 @@ Completed
   - [x] Create initial migration with `prisma migrate dev`
   - [x] Create `prisma/seed.ts` to seed system item types
   - [x] Verify migration runs cleanly against development Neon branch
+- Seed data
+  - [x] Demo user: demo@devstash.io, password hashed with bcryptjs (12 rounds)
+  - [x] 7 system item types seeded (snippet, prompt, command, note, file, image, link)
+  - [x] React Patterns collection with 3 TypeScript snippets
+  - [x] AI Workflows collection with 3 prompts
+  - [x] DevOps collection with 1 snippet, 1 command, 2 links
+  - [x] Terminal Commands collection with 4 commands
+  - [x] Design Resources collection with 4 links
+  - [x] Seed runs cleanly via `npm run db:seed`
