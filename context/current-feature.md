@@ -1,23 +1,22 @@
-# Current Feature
+# Current feature
+
+<!-- Feature Name -->
 
 Prisma + Neon PostgreSQL Setup - Configure Prisma 7 ORM with Neon serverless PostgreSQL, create initial schema, and seed system item types.
 
 ## Status
 
-In Progress
+<!-- Not Started|In Progress|Completed -->
+
+Completed
 
 ## Goals
 
-- [x] Install Prisma 7 and review upgrade guide for breaking changes
-- [x] Configure Neon PostgreSQL connection via DATABASE_URL
-- [x] Create `prisma/schema.prisma` with full schema from project-overview.md (User, Item, ItemType, Collection, ItemCollection, Tag)
-- [x] Include NextAuth models (Account, Session, VerificationToken)
-- [x] Add appropriate indexes and cascade deletes
-- [x] Create initial migration with `prisma migrate dev`
-- [x] Create `prisma/seed.ts` to seed system item types
-- [x] Verify migration runs cleanly against development Neon branch
+<!-- Goals & requirements -->
 
 ## Notes
+
+<!-- Any extra notes -->
 
 - Spec: @context/features/database-spec.md
 - Schema reference: @context/project-overview.md (Prisma Schema section)
@@ -26,6 +25,8 @@ In Progress
 - DATABASE_URL should point to the Neon development branch
 
 ## History
+
+<!-- Keep this updated. Earliest to latest -->
 
 - next.js cleanup and tailwind setup
 - Dashboard UI Phase 1: ShadCN setup, dashboard route, top bar with centered search, logo icon, dark mode, sidebar/main placeholders
@@ -65,3 +66,12 @@ In Progress
   - [x] Mobile drawer starts below TopBar (top-14 offset) so TopBar is never covered
   - [x] Sidebar collapse animation scoped to transition-[width] to prevent TopBar flicker
   - [x] Scrollbars reworked: theme-aware rgba thumb colors (light/dark mode), 6px width, transparent track, consistent appearance across sidebar and main area
+- Prisma 7 + Neon PostgreSQL setup
+  - [x] Install Prisma 7 and review upgrade guide for breaking changes
+  - [x] Configure Neon PostgreSQL connection via DATABASE_URL
+  - [x] Create `prisma/schema.prisma` with full schema (User, Item, ItemType, Collection, ItemCollection, Tag)
+  - [x] Include NextAuth models (Account, Session, VerificationToken)
+  - [x] Add appropriate indexes and cascade deletes
+  - [x] Create initial migration with `prisma migrate dev`
+  - [x] Create `prisma/seed.ts` to seed system item types
+  - [x] Verify migration runs cleanly against development Neon branch
