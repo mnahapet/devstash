@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Pin, Star, MoreHorizontal, ChevronLeft, ChevronRight,
   Code, Sparkles, Terminal, StickyNote, File, Image,
@@ -8,6 +8,12 @@ import {
 } from 'lucide-react';
 import { mockItems, mockCollections, mockItemTypes } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from '@/components/ui/carousel';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Code, Sparkles, Terminal, StickyNote, File, Image, Link: LinkIcon,
@@ -100,9 +106,7 @@ function ItemCard({ item }: { item: typeof pinnedItems[0] }) {
         >
           {Icon && <Icon className='h-3.5 w-3.5' style={{ color: itemType?.color }} />}
         </div>
-        <div className='flex items-center gap-1'>
-          {item.isFavorite && <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />}
-        </div>
+        {item.isFavorite && <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />}
       </div>
       <p className='mt-2 font-medium text-sm leading-snug line-clamp-2'>{item.title}</p>
       {item.description && (
@@ -125,34 +129,25 @@ function ItemCard({ item }: { item: typeof pinnedItems[0] }) {
 }
 
 export default function PinnedItems() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
   const total = allPinned.length;
 
+  useEffect(() => {
+    if (!api) return;
+    const update = () => {
+      setCurrent(api.selectedScrollSnap());
+      setCanPrev(api.canScrollPrev());
+      setCanNext(api.canScrollNext());
+    };
+    update();
+    api.on('select', update);
+    api.on('reInit', update);
+  }, [api]);
+
   if (total === 0) return null;
-
-  function scrollToIndex(index: number) {
-    const container = scrollRef.current;
-    if (!container) return;
-    const card = container.children[index] as HTMLElement;
-    if (!card) return;
-    container.scrollTo({ left: card.offsetLeft, behavior: 'smooth' });
-    setActiveIndex(index);
-  }
-
-  function handleScroll() {
-    const container = scrollRef.current;
-    if (!container) return;
-    const cards = Array.from(container.children) as HTMLElement[];
-    const scrollLeft = container.scrollLeft;
-    let closest = 0;
-    let minDist = Infinity;
-    cards.forEach((card, i) => {
-      const dist = Math.abs(card.offsetLeft - scrollLeft);
-      if (dist < minDist) { minDist = dist; closest = i; }
-    });
-    setActiveIndex(closest);
-  }
 
   return (
     <section>
@@ -163,26 +158,22 @@ export default function PinnedItems() {
         </div>
         <div className='flex items-center gap-1'>
           <button
-            onClick={() => scrollToIndex(Math.max(0, activeIndex - 1))}
-            disabled={activeIndex === 0}
+            onClick={() => api?.scrollPrev()}
+            disabled={!canPrev}
             className={cn(
               'flex items-center justify-center h-7 w-7 rounded-md border border-border transition-colors',
-              activeIndex === 0
-                ? 'opacity-30 cursor-not-allowed'
-                : 'hover:bg-accent hover:text-foreground'
+              !canPrev ? 'opacity-30 cursor-not-allowed' : 'hover:bg-accent hover:text-foreground'
             )}
             aria-label='Previous'
           >
             <ChevronLeft className='h-4 w-4' />
           </button>
           <button
-            onClick={() => scrollToIndex(Math.min(total - 1, activeIndex + 1))}
-            disabled={activeIndex === total - 1}
+            onClick={() => api?.scrollNext()}
+            disabled={!canNext}
             className={cn(
               'flex items-center justify-center h-7 w-7 rounded-md border border-border transition-colors',
-              activeIndex === total - 1
-                ? 'opacity-30 cursor-not-allowed'
-                : 'hover:bg-accent hover:text-foreground'
+              !canNext ? 'opacity-30 cursor-not-allowed' : 'hover:bg-accent hover:text-foreground'
             )}
             aria-label='Next'
           >
@@ -191,32 +182,29 @@ export default function PinnedItems() {
         </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        onScroll={handleScroll}
-        className='flex gap-3 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden py-1'
-      >
-        {allPinned.map((card, i) => (
-          <div
-            key={i}
-            className={cn('w-72 shrink-0 rounded-lg transition-all duration-200', i === activeIndex ? 'ring-1 ring-white/50' : '')}
-          >
-            {card.kind === 'collection'
-              ? <CollectionCard col={card.data} />
-              : <ItemCard item={card.data} />}
-          </div>
-        ))}
-      </div>
+      <Carousel setApi={setApi} opts={{ align: 'start', loop: false }} className='w-full'>
+        <CarouselContent className='-ml-3'>
+          {allPinned.map((card, i) => (
+            <CarouselItem key={i} className='pl-3 sm:basis-1/2 lg:basis-1/3'>
+              <div className={cn('h-full rounded-lg transition-all duration-200', i === current ? 'ring-1 ring-white/50' : '')}>
+                {card.kind === 'collection'
+                  ? <CollectionCard col={card.data} />
+                  : <ItemCard item={card.data} />}
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
 
       {total > 1 && (
         <div className='flex justify-center gap-1.5 mt-3'>
           {allPinned.map((_, i) => (
             <button
               key={i}
-              onClick={() => scrollToIndex(i)}
+              onClick={() => api?.scrollTo(i)}
               className={cn(
                 'h-1.5 rounded-full transition-all duration-200',
-                i === activeIndex ? 'w-4 bg-foreground' : 'w-1.5 bg-muted-foreground/40 hover:bg-muted-foreground/70'
+                i === current ? 'w-4 bg-foreground' : 'w-1.5 bg-muted-foreground/40 hover:bg-muted-foreground/70'
               )}
               aria-label={`Go to slide ${i + 1}`}
             />

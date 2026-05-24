@@ -107,4 +107,4 @@ Completed
   - [x] Added isPinned field to mock collections data
   - [x] Dashboard Pinned section moved before Collections, shows all pinned collections then items as horizontal carousel
   - [x] Carousel has left/right arrow buttons, dot indicators, and active card highlighted with white ring on all sides
-  - [x] Active card uses ring-1 ring-white/50; scroll container has py-1 to prevent ring clipping
+  - [x] Pinned carousel uses shadcn Carousel (Embla) with custom arrow buttons in header and dot indicators; active card highlighted with ring-1 ring-white/50
