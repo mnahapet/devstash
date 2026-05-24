@@ -1,8 +1,12 @@
 # Current feature
 
-Dashboard card & carousel polish
+<!-- Feature Name -->
+
+Dashboard Collections — Real Data
 
 ## Status
+
+<!-- Not Started|In Progress|Completed -->
 
 Completed
 
@@ -12,7 +16,9 @@ Completed
 
 ## Notes
 
-<!-- Any extra notes -->
+- Spec: @context/features/dashboard-collections-spec.md
+- Do not replace items data yet — collections only
+- Reference screenshot: @context/screenshots/dashboard-collections.JPG
 
 - Spec: @context/features/seed-spec.md
 - Overwrite existing `prisma/seed.ts` with the full seed script
@@ -138,3 +144,32 @@ Completed
   - [x] Heart and Star link to /dashboard favorites; Clock links to /dashboard recent
 - Dashboard further refinements
   - [x] RecentCarousel added below Items section: shows 3 most recent collections then 3 most recent items in a carousel with Clock icon header
+- Dashboard pagination & mock data expansion
+  - [x] Collections section: client-side pagination added, 6 per page, chevron buttons with page indicator
+  - [x] Items section: client-side pagination added, 6 per page, chevron buttons with page indicator
+  - [x] "View all" text removed from Collections section header
+  - [x] Mock data expanded to 16 collections and 22 items to demonstrate pagination
+- Expanded seed data (11 collections, 36 items)
+  - [x] 6 new collections seeded: TypeScript Utils, Next.js Patterns, Database & SQL, Interview Prep, Security Notes, VS Code Setup
+  - [x] 3 items per collection (mix of snippets, prompts, commands, notes, links) with realistic content
+  - [x] All upserts use stable seed IDs for idempotency
+- Dashboard Collections — Real Data
+  - [x] Created `src/lib/db/collections.ts` with `getCollections(userId)` and `getCollectionStats(userId)`
+  - [x] `CollectionWithStats` type includes `id`, `name`, `description`, `isFavorite`, `isPinned`, `hasFavoriteItem`, `itemCount`, `typeDistribution`, timestamps
+  - [x] `typeDistribution` computed from `ItemCollection → Item → ItemType` — includes `typeId`, `color`, `icon`, `count`
+  - [x] Dashboard page made async server component; fetches collections and stats in parallel via `Promise.all`
+  - [x] `export const dynamic = 'force-dynamic'` added to dashboard page to prevent static prerendering
+  - [x] `StatsCards` updated to accept and display real `collectionStats` (total + favorites) from DB
+  - [x] `Collections` component updated to accept `CollectionWithStats[]` prop; all mock collection references removed
+  - [x] `scripts/set-favorites.ts` created to mark 4 collections as `isFavorite: true` in DB
+- Collection card status icons — real data
+  - [x] `isPinned Boolean @default(false)` added to Collection schema; migration `add_collection_is_pinned` applied
+  - [x] `hasFavoriteItem` computed in `getCollections` by checking `item.isFavorite` across all items in a collection
+  - [x] Collection cards (grid + list) now show: pink Heart if `isFavorite`, yellow Star if `hasFavoriteItem`, theme-foreground Pin if `isPinned`
+  - [x] Pin icon color changed to `fill-foreground text-foreground` to be visible in both light and dark mode
+  - [x] `scripts/set-pins-and-item-favorites.ts` created to mark 6 items as `isFavorite` and 2 collections as `isPinned` in DB
+- Sidebar favorite collections — real data
+  - [x] `Sidebar` accepts optional `favoriteCollections: { id, name, itemCount }[]` prop
+  - [x] Dashboard page derives top-3 favorite collections from already-fetched `collections` array (no extra DB query)
+  - [x] Sidebar Favorites section renders real favorite collections with pink Heart icon and item count
+  - [x] Heart color in sidebar set to `fill-pink-500 text-pink-500` matching dashboard card design

@@ -92,7 +92,7 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Pin className='h-4 w-4 shrink-0 text-muted-foreground' />
+          <Pin className='h-4 w-4 shrink-0 fill-white text-white' />
         </Link>
 
         <div className='w-full border-t border-border my-1 shrink-0' />
@@ -126,7 +126,7 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Heart className='h-4 w-4 shrink-0 text-pink-500' />
+          <Heart className='h-4 w-4 shrink-0 fill-pink-500 text-pink-500' />
         </Link>
         <Link
           href='/dashboard'
@@ -134,7 +134,7 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Star className='h-4 w-4 shrink-0 text-yellow-400' />
+          <Star className='h-4 w-4 shrink-0 fill-yellow-400 text-yellow-400' />
         </Link>
 
         <div className='w-full border-t border-border my-1 shrink-0' />
@@ -159,7 +159,9 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
   );
 }
 
-function SidebarContent({ onClose }: { onClose?: () => void }) {
+type SidebarFavCollection = { id: string; name: string; itemCount: number };
+
+function SidebarContent({ onClose, favoriteCollections }: { onClose?: () => void; favoriteCollections?: SidebarFavCollection[] }) {
   const [pinnedOpen, setPinnedOpen] = useState(true);
   const [typesOpen, setTypesOpen] = useState(true);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
@@ -176,10 +178,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
     .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 1);
 
-  const recentFavCollections = [...mockCollections]
-    .filter(c => c.isFavorite)
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3);
+  const recentFavCollections = favoriteCollections ?? [];
 
   const recentFavItems = [...mockItems]
     .filter(i => i.isFavorite)
@@ -326,7 +325,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Heart className='h-3.5 w-3.5 shrink-0 fill-pink-400 text-pink-400' />
+                  <Heart className='h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500' />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
@@ -421,7 +420,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ favoriteCollections }: { favoriteCollections?: SidebarFavCollection[] }) {
   const { isCollapsed, isMobileOpen, closeMobile, toggleCollapsed, toggleMobile } = useSidebar();
 
   return (
@@ -433,7 +432,7 @@ export default function Sidebar() {
           isCollapsed ? 'w-12' : 'w-60'
         )}
       >
-        {isCollapsed ? <MiniSidebarContent onToggle={toggleCollapsed} /> : <SidebarContent />}
+        {isCollapsed ? <MiniSidebarContent onToggle={toggleCollapsed} /> : <SidebarContent favoriteCollections={favoriteCollections} />}
       </aside>
 
       {/* Mobile mini sidebar — always visible on < lg */}
@@ -451,7 +450,7 @@ export default function Sidebar() {
           style={{ top: '3.5rem', height: 'calc(100dvh - 3.5rem)', width: '15rem' }}
         >
           <SheetTitle className='sr-only'>Navigation</SheetTitle>
-          <SidebarContent onClose={closeMobile} />
+          <SidebarContent onClose={closeMobile} favoriteCollections={favoriteCollections} />
         </SheetContent>
       </Sheet>
     </>
