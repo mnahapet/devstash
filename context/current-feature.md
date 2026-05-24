@@ -1,19 +1,29 @@
 # Current Feature
 
-Dashboard UI Phase 3 - Main area with stats cards, recent collections, pinned items, and recent items.
+Prisma + Neon PostgreSQL Setup - Configure Prisma 7 ORM with Neon serverless PostgreSQL, create initial schema, and seed system item types.
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- [x] Install Prisma 7 and review upgrade guide for breaking changes
+- [x] Configure Neon PostgreSQL connection via DATABASE_URL
+- [x] Create `prisma/schema.prisma` with full schema from project-overview.md (User, Item, ItemType, Collection, ItemCollection, Tag)
+- [x] Include NextAuth models (Account, Session, VerificationToken)
+- [x] Add appropriate indexes and cascade deletes
+- [x] Create initial migration with `prisma migrate dev`
+- [x] Create `prisma/seed.ts` to seed system item types
+- [x] Verify migration runs cleanly against development Neon branch
+
 ## Notes
 
-- Reference screenshots: @context/screenshots/dashboard-ui-main.png, @context/screenshots/dashboard-ui-drawer.png
-- See @context/project-overview.md for full context
-- Mock data available at @src/lib/mock-data.ts
-- Spec: @context/features/dashboard-phase-3-spec.md
+- Spec: @context/features/database-spec.md
+- Schema reference: @context/project-overview.md (Prisma Schema section)
+- Use Prisma 7 — has breaking changes, review upgrade guide before installing
+- ALWAYS use `prisma migrate dev` for schema changes, NEVER `prisma db push`
+- DATABASE_URL should point to the Neon development branch
 
 ## History
 
