@@ -97,3 +97,8 @@ Completed
   - [x] Terminal Commands collection with 4 commands
   - [x] Design Resources collection with 4 links
   - [x] Seed runs cleanly via `npm run db:seed`
+- Sidebar navigation restructure
+  - [x] Separator line added between Types and Collections sections
+  - [x] COLLECTIONS section replaced with FAVORITES section showing 3 most recent favorite collections (pink Heart icon) and 3 most recent favorite items (yellow Star icon)
+  - [x] COLLECTIONS section added below FAVORITES showing all collections sorted newest first (folder icon colored by dominant item type + item count)
+  - [x] Favorite Collections stat card icon changed from BookMarked to Heart (pink, with pink-tinted background)

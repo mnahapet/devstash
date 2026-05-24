@@ -13,6 +13,7 @@ import {
   Link as LinkIcon,
   ChevronDown,
   Star,
+  Heart,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -30,6 +31,7 @@ import {
   mockItemTypes,
   mockItemTypeCounts,
   mockCollections,
+  mockItems,
   mockUser,
 } from '@/lib/mock-data';
 
@@ -110,11 +112,22 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
   const [typesOpen, setTypesOpen] = useState(true);
+  const [favoritesOpen, setFavoritesOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
   const { toggleCollapsed } = useSidebar();
 
-  const favoriteCollections = mockCollections.filter(c => c.isFavorite);
-  const otherCollections = mockCollections.filter(c => !c.isFavorite);
+  const recentFavCollections = [...mockCollections]
+    .filter(c => c.isFavorite)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 3);
+
+  const recentFavItems = [...mockItems]
+    .filter(i => i.isFavorite)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 3);
+
+  const allCollections = [...mockCollections]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   const initials = getUserInitials();
   const handleToggle = onClose ?? toggleCollapsed;
@@ -180,8 +193,52 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           )}
         </div>
 
+        {/* Favorites */}
+        <div className='mt-4 pt-4 border-t border-border'>
+          <button
+            onClick={() => setFavoritesOpen(prev => !prev)}
+            className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
+          >
+            Favorites
+            <ChevronDown
+              className={cn(
+                'h-3.5 w-3.5 transition-transform duration-150',
+                !favoritesOpen && '-rotate-90'
+              )}
+            />
+          </button>
+
+          {favoritesOpen && (
+            <div className='mt-1 space-y-0.5'>
+              {recentFavCollections.map(col => (
+                <Link
+                  key={col.id}
+                  href={`/collections/${col.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Heart className='h-3.5 w-3.5 shrink-0 fill-pink-400 text-pink-400' />
+                  <span className='flex-1 truncate'>{col.name}</span>
+                  <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
+                </Link>
+              ))}
+              {recentFavItems.map(item => (
+                <Link
+                  key={item.id}
+                  href={`/items/${item.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Star className='h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400' />
+                  <span className='flex-1 truncate'>{item.title}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Collections */}
-        <div className='mt-4'>
+        <div className='mt-4 pt-4 border-t border-border'>
           <button
             onClick={() => setCollectionsOpen(prev => !prev)}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
@@ -197,49 +254,21 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
           {collectionsOpen && (
             <div className='mt-1 space-y-0.5'>
-              {favoriteCollections.length > 0 && (
-                <>
-                  <p className='px-2 pt-2 pb-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest'>
-                    Favorites
-                  </p>
-                  {favoriteCollections.map(col => (
-                    <Link
-                      key={col.id}
-                      href={`/collections/${col.id}`}
-                      onClick={onClose}
-                      className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                    >
-                      <Star className='h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400' />
-                      <span className='flex-1 truncate'>{col.name}</span>
-                    </Link>
-                  ))}
-                </>
-              )}
-
-              {otherCollections.length > 0 && (
-                <>
-                  <p className='px-2 pt-3 pb-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-widest'>
-                    All Collections
-                  </p>
-                  {otherCollections.map(col => (
-                    <Link
-                      key={col.id}
-                      href={`/collections/${col.id}`}
-                      onClick={onClose}
-                      className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
-                    >
-                      <Folder
-                        className='h-3.5 w-3.5 shrink-0'
-                        style={{ color: getDominantTypeColor(col.typeDistribution) }}
-                      />
-                      <span className='flex-1 truncate'>{col.name}</span>
-                      <span className='text-xs text-muted-foreground'>
-                        {col.itemCount}
-                      </span>
-                    </Link>
-                  ))}
-                </>
-              )}
+              {allCollections.map(col => (
+                <Link
+                  key={col.id}
+                  href={`/collections/${col.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Folder
+                    className='h-3.5 w-3.5 shrink-0'
+                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
+                  />
+                  <span className='flex-1 truncate'>{col.name}</span>
+                  <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
+                </Link>
+              ))}
             </div>
           )}
         </div>
