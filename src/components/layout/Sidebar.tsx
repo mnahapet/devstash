@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Star,
   Heart,
+  Pin,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -111,10 +112,21 @@ function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?
 }
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
+  const [pinnedOpen, setPinnedOpen] = useState(true);
   const [typesOpen, setTypesOpen] = useState(true);
   const [favoritesOpen, setFavoritesOpen] = useState(true);
-  const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const [recentOpen, setRecentOpen] = useState(true);
   const { toggleCollapsed } = useSidebar();
+
+  const pinnedCollection = [...mockCollections]
+    .filter(c => c.isPinned)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 1);
+
+  const pinnedItem = [...mockItems]
+    .filter(i => i.isPinned)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 1);
 
   const recentFavCollections = [...mockCollections]
     .filter(c => c.isFavorite)
@@ -126,8 +138,13 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
     .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3);
 
-  const allCollections = [...mockCollections]
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const recentCollections = [...mockCollections]
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 3);
+
+  const recentItems = [...mockItems]
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .slice(0, 3);
 
   const initials = getUserInitials();
   const handleToggle = onClose ?? toggleCollapsed;
@@ -148,6 +165,50 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         </Button>
       </div>
       <div className='sidebar-scroll flex-1 overflow-y-auto py-3 px-2'>
+        {/* Pinned */}
+        <div className='mb-4 pb-4 border-b border-border'>
+          <button
+            onClick={() => setPinnedOpen(prev => !prev)}
+            className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
+          >
+            Pinned
+            <ChevronDown
+              className={cn(
+                'h-3.5 w-3.5 transition-transform duration-150',
+                !pinnedOpen && '-rotate-90'
+              )}
+            />
+          </button>
+
+          {pinnedOpen && (
+            <div className='mt-1 space-y-0.5'>
+              {pinnedCollection.map(col => (
+                <Link
+                  key={col.id}
+                  href={`/collections/${col.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <span className='flex-1 truncate'>{col.name}</span>
+                  <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
+                </Link>
+              ))}
+              {pinnedItem.map(item => (
+                <Link
+                  key={item.id}
+                  href={`/items/${item.id}`}
+                  onClick={onClose}
+                  className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                >
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <span className='flex-1 truncate'>{item.title}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Types */}
         <div>
           <button
@@ -194,7 +255,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         </div>
 
         {/* Favorites */}
-        <div className='mt-4 pt-4 border-t border-border'>
+        <div className='mt-4 pt-2 border-t border-border'>
           <button
             onClick={() => setFavoritesOpen(prev => !prev)}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
@@ -237,24 +298,24 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           )}
         </div>
 
-        {/* Collections */}
-        <div className='mt-4 pt-4 border-t border-border'>
+        {/* Recent */}
+        <div className='mt-4 pt-2 border-t border-border'>
           <button
-            onClick={() => setCollectionsOpen(prev => !prev)}
+            onClick={() => setRecentOpen(prev => !prev)}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
-            Collections
+            Recent
             <ChevronDown
               className={cn(
                 'h-3.5 w-3.5 transition-transform duration-150',
-                !collectionsOpen && '-rotate-90'
+                !recentOpen && '-rotate-90'
               )}
             />
           </button>
 
-          {collectionsOpen && (
+          {recentOpen && (
             <div className='mt-1 space-y-0.5'>
-              {allCollections.map(col => (
+              {recentCollections.map(col => (
                 <Link
                   key={col.id}
                   href={`/collections/${col.id}`}
@@ -269,6 +330,23 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
               ))}
+              {recentItems.map(item => {
+                const type = mockItemTypes.find(t => t.id === item.itemTypeId);
+                const Icon = type ? ICON_MAP[type.icon] : null;
+                return (
+                  <Link
+                    key={item.id}
+                    href={`/items/${item.id}`}
+                    onClick={onClose}
+                    className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
+                  >
+                    {Icon && (
+                      <Icon className='h-3.5 w-3.5 shrink-0' style={{ color: type!.color }} />
+                    )}
+                    <span className='flex-1 truncate'>{item.title}</span>
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

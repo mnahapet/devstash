@@ -102,3 +102,6 @@ Completed
   - [x] COLLECTIONS section replaced with FAVORITES section showing 3 most recent favorite collections (pink Heart icon) and 3 most recent favorite items (yellow Star icon)
   - [x] COLLECTIONS section added below FAVORITES showing all collections sorted newest first (folder icon colored by dominant item type + item count)
   - [x] Favorite Collections stat card icon changed from BookMarked to Heart (pink, with pink-tinted background)
+  - [x] COLLECTIONS section replaced with RECENT section showing 3 most recently updated collections (folder icon) and 3 most recently updated items (type icon), newest first
+  - [x] PINNED section added above TYPES showing 1 most recently updated pinned collection and 1 most recently updated pinned item (both with filled white Pin icon)
+  - [x] Added isPinned field to mock collections data

@@ -65,6 +65,7 @@ export const mockCollections = [
     name: 'React Patterns',
     description: 'Common React patterns and hooks',
     isFavorite: true,
+    isPinned: true,
     itemCount: 12,
     typeDistribution: [
       { typeId: 'type_1', count: 8 },
