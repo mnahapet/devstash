@@ -14,6 +14,8 @@ import {
   ChevronDown,
   Star,
   Settings,
+  PanelLeftClose,
+  PanelLeftOpen,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -60,11 +62,24 @@ function getUserInitials() {
     .slice(0, 2);
 }
 
-function MiniSidebarContent({ onClose }: { onClose?: () => void }) {
+function MiniSidebarContent({ onClose, onToggle, showToggle = true }: { onClose?: () => void; onToggle?: () => void; showToggle?: boolean }) {
   const initials = getUserInitials();
 
   return (
     <div className='flex flex-col items-center h-full py-2'>
+      {showToggle && (
+        <div className='flex justify-end w-full mb-3 pr-1 shrink-0'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+            onClick={onToggle}
+            aria-label='Toggle sidebar'
+          >
+            <PanelLeftOpen className='h-4 w-4' />
+          </Button>
+        </div>
+      )}
       <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center gap-0.5 w-full px-1.5'>
         {mockItemTypes.map(type => {
           const Icon = ICON_MAP[type.icon];
@@ -96,14 +111,29 @@ function MiniSidebarContent({ onClose }: { onClose?: () => void }) {
 function SidebarContent({ onClose }: { onClose?: () => void }) {
   const [typesOpen, setTypesOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const { toggleCollapsed } = useSidebar();
 
   const favoriteCollections = mockCollections.filter(c => c.isFavorite);
   const otherCollections = mockCollections.filter(c => !c.isFavorite);
 
   const initials = getUserInitials();
+  const handleToggle = onClose ?? toggleCollapsed;
 
   return (
     <div className='flex flex-col h-full overflow-hidden'>
+      {/* Sidebar header: Navigation label + collapse/close toggle */}
+      <div className='flex items-center justify-between px-3 h-11 border-b border-border shrink-0'>
+        <span className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>Navigation</span>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
+          onClick={handleToggle}
+          aria-label='Toggle sidebar'
+        >
+          <PanelLeftClose className='h-4 w-4' />
+        </Button>
+      </div>
       <div className='sidebar-scroll flex-1 overflow-y-auto py-3 px-2'>
         {/* Types */}
         <div>
@@ -237,7 +267,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 }
 
 export default function Sidebar() {
-  const { isCollapsed, isMobileOpen, closeMobile } = useSidebar();
+  const { isCollapsed, isMobileOpen, closeMobile, toggleCollapsed, toggleMobile } = useSidebar();
 
   return (
     <>
@@ -248,19 +278,20 @@ export default function Sidebar() {
           isCollapsed ? 'w-12' : 'w-60'
         )}
       >
-        {isCollapsed ? <MiniSidebarContent /> : <SidebarContent />}
+        {isCollapsed ? <MiniSidebarContent onToggle={toggleCollapsed} /> : <SidebarContent />}
       </aside>
 
       {/* Mobile mini sidebar — always visible on < lg */}
       <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-sidebar'>
-        <MiniSidebarContent />
+        <MiniSidebarContent onToggle={toggleMobile} showToggle={!isMobileOpen} />
       </aside>
 
-      {/* Mobile drawer — slides in from hamburger, starts below TopBar */}
+      {/* Mobile drawer — slides in beside mini sidebar, starts below TopBar */}
       <Sheet open={isMobileOpen} onOpenChange={closeMobile}>
         <SheetContent
           side='left'
           className='p-0 gap-0'
+          showCloseButton={false}
           overlayClassName='top-14'
           style={{ top: '3.5rem', height: 'calc(100dvh - 3.5rem)', width: '15rem' }}
         >

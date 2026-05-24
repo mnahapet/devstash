@@ -21,6 +21,15 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   }, []);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (e.matches) setIsMobileOpen(false);
+    };
+    mq.addEventListener('change', handleChange);
+    return () => mq.removeEventListener('change', handleChange);
+  }, []);
+
   const toggleCollapsed = () => {
     setIsCollapsed(prev => {
       const next = !prev;

@@ -72,6 +72,13 @@ Completed
   - [x] Mobile drawer width fixed to 240px (15rem) via inline style — Tailwind w-* was overridden by SheetContent's built-in data-[side=left]:w-3/4
   - [x] Sidebar hydration mismatch fixed: isCollapsed now always initializes as false on server, then reads localStorage in useEffect
   - [x] Favicon added as src/app/icon.tsx (Next.js App Router auto-detection) — black Layers icon, 32×32
+- Sidebar toggle UX polish
+  - [x] Toggle moved from TopBar into sidebar itself — `PanelLeftClose` (Lucide) in the full sidebar header, `PanelLeftOpen` (Lucide) in the mini sidebar, right-aligned in both cases
+  - [x] Full sidebar header shows "Navigation" label + `PanelLeftClose` toggle; on desktop it collapses to mini, in the mobile drawer it closes the drawer
+  - [x] Mini sidebar shows `PanelLeftOpen` toggle (right-aligned) only when the mobile drawer is closed; hidden when drawer is open to avoid duplicate toggles
+  - [x] Mobile drawer starts at left:0, fully covering the mini sidebar so the header looks identical in desktop expanded and mobile expanded states
+  - [x] `isMobileOpen` auto-closes when window resizes to ≥ lg (1024px) via MediaQueryList listener in SidebarProvider, preventing desktop/mobile overlap
+  - [x] Mobile search close button uses `X` icon (Lucide)
 - Prisma 7 + Neon PostgreSQL setup
   - [x] Install Prisma 7 and review upgrade guide for breaking changes
   - [x] Configure Neon PostgreSQL connection via DATABASE_URL

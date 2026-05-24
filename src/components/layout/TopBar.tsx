@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Layers,
-  PanelLeft,
+  X,
   Plus,
   Search,
   Sun,
@@ -13,15 +13,12 @@ import {
   LayoutGrid,
   List,
   FolderPlus,
-  X,
 } from 'lucide-react';
-import { useSidebar } from './sidebar-context';
 import { useTheme } from './theme-context';
 import { useView } from '@/components/dashboard/view-context';
 import { cn } from '@/lib/utils';
 
 export default function TopBar() {
-  const { toggleCollapsed, toggleMobile } = useSidebar();
   const { theme, toggleTheme } = useTheme();
   const { viewMode, setViewMode } = useView();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -37,20 +34,11 @@ export default function TopBar() {
   if (mobileSearchOpen) {
     return (
       <header className='relative z-10 flex items-center gap-2 px-4 h-14 border-b border-border shrink-0'>
-        {/* Left: logo + sidebar toggle */}
-        <div className='flex items-center gap-2 shrink-0'>
+        {/* Left: logo */}
+        <div className='flex items-center shrink-0'>
           <div className='flex items-center justify-center h-7 w-7 rounded-sm bg-linear-to-br from-violet-500 to-indigo-700'>
             <Layers className='h-4 w-4 text-white' />
           </div>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
-            onClick={toggleMobile}
-            aria-label='Open sidebar'
-          >
-            <PanelLeft className='h-4 w-4' />
-          </Button>
         </div>
 
         {/* Search input */}
@@ -103,24 +91,6 @@ export default function TopBar() {
         <span className='text-lg font-semibold tracking-tight hidden sm:block'>
           DevStash
         </span>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='hidden lg:flex h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
-          onClick={toggleCollapsed}
-          aria-label='Toggle sidebar'
-        >
-          <PanelLeft className='h-4 w-4' />
-        </Button>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='lg:hidden h-7 w-7 hover:bg-accent dark:hover:bg-white/10 hover:text-foreground transition-colors'
-          onClick={toggleMobile}
-          aria-label='Open sidebar'
-        >
-          <PanelLeft className='h-4 w-4' />
-        </Button>
       </div>
 
       {/* Center: search — hidden on mobile */}
