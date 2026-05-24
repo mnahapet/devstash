@@ -54,7 +54,7 @@ Completed
   - [x] Collection cards have a proportional color strip on the left based on item type distribution
   - [x] Pinned and recent items have a left border in their item type color
   - [x] Dark/light mode toggler in top bar at right edge next to New Item (persists to localStorage)
-  - [x] List/grid view switcher in top bar (affects pinned and recent items)
+  - [x] List/grid view switcher in top bar (affects collections, pinned, and recent items)
   - [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
   - [x] FolderPlus icon on New Collection button
   - [x] Styled thin scrollbar on main content area matching sidebar scrollbar
