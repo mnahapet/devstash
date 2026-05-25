@@ -31,6 +31,15 @@ import {
 } from '@/components/ui/sheet';
 import { useSidebar } from './sidebar-context';
 import type { ItemTypeWithCount } from '@/lib/db/item-types';
+import type {
+  SidebarUser,
+  SidebarFavCollection,
+  SidebarFavItem,
+  SidebarRecentCollection,
+  SidebarRecentItem,
+  SidebarPinnedCollection,
+  SidebarPinnedItem,
+} from '@/types/sidebar';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Code,
@@ -53,28 +62,12 @@ function getUserInitials(name: string | null): string {
   if (!name) return '?';
   return name
     .split(' ')
-    .map((n: string) => n[0])
+    .map(n => n[0])
     .join('')
     .toUpperCase()
     .slice(0, 2);
 }
 
-export type SidebarUser = { name: string | null; email: string };
-export type SidebarFavCollection = { id: string; name: string; itemCount: number; typeDistribution: { color: string; count: number }[] };
-export type SidebarFavItem = { id: string; title: string; itemType: { icon: string; color: string } };
-export type SidebarRecentCollection = {
-  id: string;
-  name: string;
-  itemCount: number;
-  typeDistribution: { color: string; count: number }[];
-};
-export type SidebarRecentItem = {
-  id: string;
-  title: string;
-  itemType: { icon: string; color: string };
-};
-export type SidebarPinnedItem = { id: string; title: string; itemType: { icon: string; color: string } };
-export type SidebarPinnedCollection = { id: string; name: string; itemCount: number; typeDistribution: { color: string; count: number }[] };
 
 interface SidebarProps {
   user: SidebarUser;

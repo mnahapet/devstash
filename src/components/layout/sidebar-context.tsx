@@ -14,12 +14,12 @@ const SidebarContext = createContext<SidebarContextValue | null>(null);
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('sidebar-collapsed');
     if (stored !== null) setIsCollapsed(JSON.parse(stored) as boolean);
   }, []);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)');
