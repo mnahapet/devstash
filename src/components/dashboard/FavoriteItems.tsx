@@ -90,7 +90,7 @@ function ItemCard({ item }: { item: ItemWithType }) {
           {Icon && <Icon className='h-3 w-3' style={{ color: item.itemType.color }} />}
         </div>
         <div className='flex items-center gap-1 shrink-0'>
-          <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />
+          {item.isFavorite && <Star className='h-3 w-3 fill-yellow-400 text-yellow-400' />}
           {item.isPinned && <Pin className='h-3 w-3 fill-foreground text-foreground' />}
         </div>
       </div>
