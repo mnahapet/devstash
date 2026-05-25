@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 
-import { prisma } from '@/lib/prisma';
+import { getUserByEmail } from '@/lib/db/users';
 import { getCollections, deriveCollectionStats } from '@/lib/db/collections';
 import { getItems, deriveItemStats } from '@/lib/db/items';
 import { getItemTypesWithCounts } from '@/lib/db/item-types';
@@ -13,7 +13,8 @@ import Items from '@/components/dashboard/Items';
 import RecentCarousel from '@/components/dashboard/RecentCarousel';
 
 export default async function DashboardPage() {
-  const user = await prisma.user.findFirst({ where: { email: 'demo@devstash.io' } });
+  // TODO: replace with getUserById(session.user.id) once NextAuth is wired up
+  const user = await getUserByEmail('demo@devstash.io');
   const userId = user?.id ?? '';
 
   const [collections, items, itemTypes] = await Promise.all([
