@@ -16,6 +16,8 @@ import {
   Heart,
   Pin,
   Clock,
+  FolderOpen,
+  Library,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -82,12 +84,22 @@ interface SidebarProps {
 
 function MiniSidebarContent({
   itemTypes,
+  pinnedCollections,
+  favoriteCollections,
+  recentCollections,
+  favoriteItems,
+  recentItems,
   user,
   onClose,
   onToggle,
   showToggle = true,
 }: {
   itemTypes: ItemTypeWithCount[];
+  pinnedCollections: SidebarPinnedCollection[];
+  favoriteCollections: SidebarFavCollection[];
+  recentCollections: SidebarRecentCollection[];
+  favoriteItems: SidebarFavItem[];
+  recentItems: SidebarRecentItem[];
   user: SidebarUser;
   onClose?: () => void;
   onToggle?: () => void;
@@ -111,17 +123,19 @@ function MiniSidebarContent({
           </Button>
         )}
 
-        {/* Pin */}
-        <Link
-          href='/dashboard'
-          title='Pinned'
-          onClick={onClose}
-          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
-        >
-          <Pin className='h-4 w-4 shrink-0 text-foreground' />
-        </Link>
+        {/* Pinned collection */}
+        {pinnedCollections[0] && (
+          <Link
+            href={`/collections/${pinnedCollections[0].id}`}
+            title={pinnedCollections[0].name}
+            onClick={onClose}
+            className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+          >
+            <Pin className='h-4 w-4 shrink-0 fill-foreground text-foreground' />
+          </Link>
+        )}
 
-        <div className='w-full border-t border-border my-1 shrink-0' />
+        <div className='w-full border-t border-muted-foreground/30 my-1.5 shrink-0' />
 
         {/* Type icons */}
         <div className='flex flex-col items-center gap-0.5 w-full'>
@@ -143,37 +157,75 @@ function MiniSidebarContent({
           })}
         </div>
 
-        <div className='w-full border-t border-border my-1 shrink-0' />
+        <div className='w-full border-t border-muted-foreground/30 my-1.5 shrink-0' />
 
-        {/* Heart + Star */}
+        {/* Collections group */}
         <Link
-          href='/dashboard'
-          title='Favorites'
+          href='/collections'
+          title='All Collections'
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Heart className='h-4 w-4 shrink-0 text-pink-500' />
+          <FolderOpen className='h-4 w-4 shrink-0' />
         </Link>
+        {favoriteCollections[0] && (
+          <Link
+            href={`/collections/${favoriteCollections[0].id}`}
+            title={favoriteCollections[0].name}
+            onClick={onClose}
+            className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+          >
+            <Heart className='h-4 w-4 shrink-0 fill-pink-500 text-pink-500' />
+          </Link>
+        )}
+        {recentCollections[0] && (
+          <Link
+            href={`/collections/${recentCollections[0].id}`}
+            title={recentCollections[0].name}
+            onClick={onClose}
+            className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+          >
+            <div
+              className='h-3 w-3 rounded-full shrink-0'
+              style={{ backgroundColor: getDominantTypeColor(recentCollections[0].typeDistribution) }}
+            />
+          </Link>
+        )}
+
+        <div className='w-full border-t border-muted-foreground/30 my-1.5 shrink-0' />
+
+        {/* Items group */}
         <Link
-          href='/dashboard'
-          title='Favorites'
+          href='/items'
+          title='All Items'
           onClick={onClose}
           className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
         >
-          <Star className='h-4 w-4 shrink-0 text-yellow-400' />
+          <Library className='h-4 w-4 shrink-0' />
         </Link>
-
-        <div className='w-full border-t border-border my-1 shrink-0' />
-
-        {/* Recent */}
-        <Link
-          href='/dashboard'
-          title='Recent'
-          onClick={onClose}
-          className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
-        >
-          <Clock className='h-4 w-4 shrink-0 text-muted-foreground' />
-        </Link>
+        {favoriteItems[0] && (
+          <Link
+            href={`/items/${favoriteItems[0].id}`}
+            title={favoriteItems[0].title}
+            onClick={onClose}
+            className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+          >
+            <Star className='h-4 w-4 shrink-0 fill-yellow-400 text-yellow-400' />
+          </Link>
+        )}
+        {recentItems[0] && (
+          <Link
+            href={`/items/${recentItems[0].id}`}
+            title={recentItems[0].title}
+            onClick={onClose}
+            className='flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent transition-colors shrink-0'
+          >
+            <div
+              className='h-3 w-3 rounded-full shrink-0'
+              style={{ backgroundColor: recentItems[0].itemType.color }}
+            />
+          </Link>
+        )}
       </div>
 
       <div className='shrink-0 pt-2 border-t border-border w-full flex justify-center'>
@@ -488,13 +540,13 @@ export default function Sidebar(props: SidebarProps) {
         )}
       >
         {isCollapsed
-          ? <MiniSidebarContent itemTypes={props.itemTypes} user={props.user} onToggle={toggleCollapsed} />
+          ? <MiniSidebarContent itemTypes={props.itemTypes} pinnedCollections={props.pinnedCollections} favoriteCollections={props.favoriteCollections} recentCollections={props.recentCollections} favoriteItems={props.favoriteItems} recentItems={props.recentItems} user={props.user} onToggle={toggleCollapsed} />
           : <SidebarContent {...props} />}
       </aside>
 
       {/* Mobile mini sidebar */}
       <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-sidebar'>
-        <MiniSidebarContent itemTypes={props.itemTypes} user={props.user} onToggle={toggleMobile} showToggle={!isMobileOpen} />
+        <MiniSidebarContent itemTypes={props.itemTypes} pinnedCollections={props.pinnedCollections} favoriteCollections={props.favoriteCollections} recentCollections={props.recentCollections} favoriteItems={props.favoriteItems} recentItems={props.recentItems} user={props.user} onToggle={toggleMobile} showToggle={!isMobileOpen} />
       </aside>
 
       {/* Mobile drawer */}

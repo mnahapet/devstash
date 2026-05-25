@@ -213,3 +213,12 @@ Not Started
   - [x] Stable compound keys (`${kind}-${id}`) replace array-index keys on `CarouselItem` and dot indicator buttons in `PinnedItems`, `FavoriteItems`, `RecentCarousel`
   - [x] `allPinned`, `allFavorites`, `allRecent` wrapped in `useMemo` to avoid recreating spread arrays on every render
   - [x] `collections.sort()` and `items.sort()` in dashboard page replaced with `.toSorted()` to prevent silent in-place mutation of shared arrays
+- Mini sidebar enhanced navigation
+  - [x] Pinned group: filled `Pin` icon (`fill-foreground text-foreground`) links to most recently updated pinned collection; hidden when none exists
+  - [x] Separator visibility improved: `border-border` → `border-muted-foreground/30`, `my-1` → `my-1.5` across all three dividers
+  - [x] Collections group added after types: `FolderOpen` → `/collections`, filled pink `Heart` → most recent favorite collection, colored circle (dominant type color) → most recent collection
+  - [x] Items group added after collections: `Library` → `/items`, filled yellow `Star` → most recent favorite item, colored circle (item type color) → most recent item
+  - [x] `MiniSidebarContent` receives `favoriteCollections`, `recentCollections`, `favoriteItems`, `recentItems` props; only `[0]` of each rendered
+  - [x] All conditional items render nothing (no placeholder) when backing data is absent
+  - [x] Both desktop collapsed aside and mobile mini aside use identical props
+  - [x] Spec created at `context/features/sidebar-mini-spec.md`
