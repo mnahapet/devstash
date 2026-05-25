@@ -1,23 +1,20 @@
-# Current feature
-
-<!-- Feature Name -->
-
-Dashboard Items — Real Data
+# Current Feature: Add Pro Badge to Sidebar
 
 ## Status
 
-<!-- Not Started|In Progress|Completed -->
-
-Completed
+In Progress
 
 ## Goals
 
-<!-- Goals & requirements -->
+- Add a ShadCN UI Badge component next to "Files" and "Images" item types in the sidebar
+- Badge displays "PRO" in uppercase
+- Badge style is clean and subtle (not loud or distracting)
 
 ## Notes
 
-- Spec: @context/features/dashboard-items-spec.md
-- Reference screenshot: @context/screenshots/dashboard-ui-items.JPG
+- Spec: @context/features/add-pro-badge-sidebar-spec.md
+- Use ShadCN `Badge` component (install if not already present)
+- Apply to both the full sidebar and mini sidebar (icon-only) views if applicable
 
 ## History
 

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Sheet,
   SheetContent,
@@ -301,6 +302,15 @@ function SidebarContent({
                       <Icon className='h-4 w-4 shrink-0' style={{ color: type.color }} />
                     )}
                     <span className='flex-1 capitalize'>{type.name}s</span>
+                    {(type.name === 'file' || type.name === 'image') && (
+                      <Badge
+                        variant='outline'
+                        className='text-[10px] px-1.5 py-0 h-4 font-semibold tracking-wide border-0 rounded-sm'
+                        style={{ background: 'linear-gradient(135deg, oklch(0.6 0.16 80), oklch(0.55 0.18 50))', color: '#fff', borderRadius: '3px' }}
+                      >
+                        PRO
+                      </Badge>
+                    )}
                     <span className='text-xs text-muted-foreground'>{type.count}</span>
                   </Link>
                 );
