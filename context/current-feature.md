@@ -195,3 +195,8 @@ Not Started
   - [x] ShadCN `Badge` component added (`src/components/ui/badge.tsx`)
   - [x] "PRO" badge displayed next to "Files" and "Images" item types in the full sidebar
   - [x] Badge style: subtle, muted variant (not loud or distracting)
+- Remove redundant getCollectionStats DB query
+  - [x] Deleted `getCollectionStats` (fired 2 extra COUNT queries on every dashboard load)
+  - [x] Added `deriveCollectionStats(collections)` — pure synchronous function, matches `deriveItemStats` pattern
+  - [x] Dashboard `Promise.all` reduced from 4 to 3 concurrent queries
+  - [x] `StatsCards` prop interface unchanged — `CollectionStats` type kept as-is

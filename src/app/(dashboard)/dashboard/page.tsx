@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 
 import { prisma } from '@/lib/prisma';
-import { getCollections, getCollectionStats } from '@/lib/db/collections';
+import { getCollections, deriveCollectionStats } from '@/lib/db/collections';
 import { getItems, deriveItemStats } from '@/lib/db/items';
 import { getItemTypesWithCounts } from '@/lib/db/item-types';
 import Sidebar from '@/components/layout/Sidebar';
@@ -16,13 +16,13 @@ export default async function DashboardPage() {
   const user = await prisma.user.findFirst({ where: { email: 'demo@devstash.io' } });
   const userId = user?.id ?? '';
 
-  const [collections, collectionStats, items, itemTypes] = await Promise.all([
+  const [collections, items, itemTypes] = await Promise.all([
     getCollections(userId),
-    getCollectionStats(userId),
     getItems(userId),
     getItemTypesWithCounts(userId),
   ]);
 
+  const collectionStats = deriveCollectionStats(collections);
   const itemStats = deriveItemStats(items);
 
   // Sidebar data — derived from already-fetched arrays, no extra DB queries

@@ -18,6 +18,13 @@ export type CollectionStats = {
   favorites: number;
 };
 
+export function deriveCollectionStats(collections: CollectionWithStats[]): CollectionStats {
+  return {
+    total: collections.length,
+    favorites: collections.filter(c => c.isFavorite).length,
+  };
+}
+
 export async function getCollections(userId: string): Promise<CollectionWithStats[]> {
   const collections = await prisma.collection.findMany({
     where: { userId },
@@ -73,10 +80,3 @@ export async function getCollections(userId: string): Promise<CollectionWithStat
   });
 }
 
-export async function getCollectionStats(userId: string): Promise<CollectionStats> {
-  const [total, favorites] = await prisma.$transaction([
-    prisma.collection.count({ where: { userId } }),
-    prisma.collection.count({ where: { userId, isFavorite: true } }),
-  ]);
-  return { total, favorites };
-}
