@@ -1,20 +1,16 @@
-# Current Feature: Add Pro Badge to Sidebar
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Add a ShadCN UI Badge component next to "Files" and "Images" item types in the sidebar
-- Badge displays "PRO" in uppercase
-- Badge style is clean and subtle (not loud or distracting)
+<!-- List goals here -->
 
 ## Notes
 
-- Spec: @context/features/add-pro-badge-sidebar-spec.md
-- Use ShadCN `Badge` component (install if not already present)
-- Apply to both the full sidebar and mini sidebar (icon-only) views if applicable
+<!-- Add notes here -->
 
 ## History
 
@@ -195,3 +191,7 @@ In Progress
   - [x] PINNED group: both collections and items now show filled white Pin icon instead of type icon
   - [x] All sidebar subsets (pinned, favorites, recent) sorted by `updatedAt` desc — most recently updated shown first
   - [x] `stats-sidebar-spec.md` updated to reflect current implementation
+- Add Pro Badge to Sidebar
+  - [x] ShadCN `Badge` component added (`src/components/ui/badge.tsx`)
+  - [x] "PRO" badge displayed next to "Files" and "Images" item types in the full sidebar
+  - [x] Badge style: subtle, muted variant (not loud or distracting)
