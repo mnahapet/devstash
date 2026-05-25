@@ -200,3 +200,12 @@ Not Started
   - [x] Added `deriveCollectionStats(collections)` — pure synchronous function, matches `deriveItemStats` pattern
   - [x] Dashboard `Promise.all` reduced from 4 to 3 concurrent queries
   - [x] `StatsCards` prop interface unchanged — `CollectionStats` type kept as-is
+- Extract shared carousel cards
+  - [x] Created `src/components/dashboard/shared/carousel-cards.tsx` with `CollectionCarouselCard`, `ItemCarouselCard`, `ICON_MAP`, `getDominantTypeColor`, `buildGradient`
+  - [x] Cards accept `showHeart?` and `showPin?` props (default `true`) to suppress context-redundant status icons
+  - [x] `PinnedItems` passes `showPin={false}`, `FavoriteItems` passes `showHeart={false}`, `RecentCarousel` uses all defaults
+  - [x] All local copies of extracted code removed from the three carousel files
+- Move user DB lookup out of dashboard page
+  - [x] Created `src/lib/db/users.ts` with `getUserById` and `getUserByEmail`
+  - [x] Dashboard page uses `getUserByEmail` (demo placeholder); `getUserById` ready for NextAuth session integration
+  - [x] Inline `prisma.user.findFirst` removed from page; `findUnique` used (email is @unique)
