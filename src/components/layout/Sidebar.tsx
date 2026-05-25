@@ -535,7 +535,7 @@ export default function Sidebar(props: SidebarProps) {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'hidden lg:flex flex-col border-r border-border shrink-0 transition-[width] duration-200 overflow-hidden',
+          'hidden lg:flex flex-col border-r border-border shrink-0 transition-[width] duration-200 overflow-hidden bg-card',
           isCollapsed ? 'w-12' : 'w-60'
         )}
       >
@@ -545,7 +545,7 @@ export default function Sidebar(props: SidebarProps) {
       </aside>
 
       {/* Mobile mini sidebar */}
-      <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-sidebar'>
+      <aside className='lg:hidden flex flex-col items-center shrink-0 w-12 border-r border-border bg-card'>
         <MiniSidebarContent itemTypes={props.itemTypes} pinnedCollections={props.pinnedCollections} favoriteCollections={props.favoriteCollections} recentCollections={props.recentCollections} favoriteItems={props.favoriteItems} recentItems={props.recentItems} user={props.user} onToggle={toggleMobile} showToggle={!isMobileOpen} />
       </aside>
 
@@ -553,7 +553,7 @@ export default function Sidebar(props: SidebarProps) {
       <Sheet open={isMobileOpen} onOpenChange={closeMobile}>
         <SheetContent
           side='left'
-          className='p-0 gap-0'
+          className='p-0 gap-0 bg-card'
           showCloseButton={false}
           overlayClassName='top-14'
           style={{ top: '3.5rem', height: 'calc(100dvh - 3.5rem)', width: '15rem' }}
