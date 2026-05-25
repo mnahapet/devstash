@@ -54,12 +54,12 @@ export default async function DashboardPage() {
     .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 
   const recentCollections = collections
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
 
   const recentItems = items
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
     .slice(0, 3)
     .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
 

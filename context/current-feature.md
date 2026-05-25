@@ -209,3 +209,7 @@ Not Started
   - [x] Created `src/lib/db/users.ts` with `getUserById` and `getUserByEmail`
   - [x] Dashboard page uses `getUserByEmail` (demo placeholder); `getUserById` ready for NextAuth session integration
   - [x] Inline `prisma.user.findFirst` removed from page; `findUnique` used (email is @unique)
+- Carousel code quality fixes
+  - [x] Stable compound keys (`${kind}-${id}`) replace array-index keys on `CarouselItem` and dot indicator buttons in `PinnedItems`, `FavoriteItems`, `RecentCarousel`
+  - [x] `allPinned`, `allFavorites`, `allRecent` wrapped in `useMemo` to avoid recreating spread arrays on every render
+  - [x] `collections.sort()` and `items.sort()` in dashboard page replaced with `.toSorted()` to prevent silent in-place mutation of shared arrays

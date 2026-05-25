@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Heart, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CollectionWithStats } from '@/lib/db/collections';
 import type { ItemWithType } from '@/lib/db/items';
@@ -28,10 +28,10 @@ export default function FavoriteItems({ favoriteCollections, favoriteItems }: Pr
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  const allFavorites: FavoriteCard[] = [
+  const allFavorites = useMemo<FavoriteCard[]>(() => [
     ...favoriteCollections.map(c => ({ kind: 'collection' as const, data: c })),
     ...favoriteItems.map(i => ({ kind: 'item' as const, data: i })),
-  ];
+  ], [favoriteCollections, favoriteItems]);
   const total = allFavorites.length;
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function FavoriteItems({ favoriteCollections, favoriteItems }: Pr
       <Carousel setApi={setApi} opts={{ align: 'start', loop: false }} className='w-full'>
         <CarouselContent className='-ml-3'>
           {allFavorites.map((card, i) => (
-            <CarouselItem key={i} className='pl-3 sm:basis-1/2 lg:basis-1/3'>
+            <CarouselItem key={`${card.kind}-${card.data.id}`} className='pl-3 sm:basis-1/2 lg:basis-1/3'>
               <div className={cn('h-full rounded-lg transition-all duration-200', i === current ? 'ring-1 ring-white/50' : '')}>
                 {card.kind === 'collection'
                   ? <CollectionCarouselCard col={card.data} showHeart={false} />
@@ -98,9 +98,9 @@ export default function FavoriteItems({ favoriteCollections, favoriteItems }: Pr
 
       {total > 1 && (
         <div className='flex justify-center gap-1.5 mt-3'>
-          {allFavorites.map((_, i) => (
+          {allFavorites.map((card, i) => (
             <button
-              key={i}
+              key={`dot-${card.kind}-${card.data.id}`}
               onClick={() => api?.scrollTo(i)}
               className={cn(
                 'h-1.5 rounded-full transition-all duration-200',
