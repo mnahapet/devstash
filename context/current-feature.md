@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Completed
 
 ## Goals
 
@@ -229,3 +229,13 @@ Not Started
   - [x] `dashboard/page.tsx` stripped of Sidebar rendering, sidebar-derived arrays, and `export const dynamic` (now on layout)
   - [x] `loading.tsx` fixed: removed `SidebarSkeleton` which was creating a second sidebar in the flex row during loading, squishing the real sidebar's toggle button off-screen
   - [x] Root cause note: sidebar links to `/collections/[id]`, `/items/[type]`, etc. have no pages yet inside `(dashboard)`, so those navigations still exit the layout; toggle will work correctly once those sub-pages are built
+- Next.js loading & error boundaries
+  - [x] Skeleton components extracted to `skeletons.tsx` (named exports: `Skeleton`, `StatsSkeleton`, `CarouselSkeleton`, `GridSkeleton`)
+  - [x] `loading.tsx` refactored to import from `skeletons.tsx`
+  - [x] Dashboard page sections converted to async server components (`StatsSection`, `PinnedSection`, `FavoritesSection`, `CollectionsSection`, `ItemsSection`, `RecentSection`)
+  - [x] Each section wrapped in `<Suspense>` with matching skeleton fallback — page shell renders immediately
+  - [x] `SectionErrorBoundary` class component created (`src/components/dashboard/SectionErrorBoundary.tsx`) — inline error strip with Retry button
+  - [x] Each `<Suspense>` wrapped in `<SectionErrorBoundary>` so a single failing section doesn't break the rest
+  - [x] `error.tsx` added at `(dashboard)/dashboard/` — catches page-level errors, centered UI with "Try again" reset
+  - [x] `error.tsx` added at `(dashboard)/` — catches layout-level errors (sidebar/auth), full-screen UI with reset
+  - [x] Spec created at `context/features/loading-error-spec.md`

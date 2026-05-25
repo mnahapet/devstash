@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { getUserByEmail } from '@/lib/db/users';
 import { getCollections, deriveCollectionStats } from '@/lib/db/collections';
 import { getItems, deriveItemStats } from '@/lib/db/items';
@@ -7,25 +8,78 @@ import PinnedItems from '@/components/dashboard/PinnedItems';
 import FavoriteItems from '@/components/dashboard/FavoriteItems';
 import Items from '@/components/dashboard/Items';
 import RecentCarousel from '@/components/dashboard/RecentCarousel';
+import { SectionErrorBoundary } from '@/components/dashboard/SectionErrorBoundary';
+import { StatsSkeleton, CarouselSkeleton, GridSkeleton } from './skeletons';
 
-export default async function DashboardPage() {
-  // TODO: replace with getUserById(session.user.id) once NextAuth is wired up
-  const user = await getUserByEmail('demo@devstash.io');
-  const userId = user?.id ?? '';
+// ─── Async section components ────────────────────────────────────────────────
 
-  // Both calls hit React cache — layout already ran these queries
+async function StatsSection({ userId }: { userId: string }) {
   const [collections, items] = await Promise.all([
     getCollections(userId),
     getItems(userId),
   ]);
+  return (
+    <StatsCards
+      collectionStats={deriveCollectionStats(collections)}
+      itemStats={deriveItemStats(items)}
+    />
+  );
+}
 
-  const collectionStats = deriveCollectionStats(collections);
-  const itemStats = deriveItemStats(items);
+async function PinnedSection({ userId }: { userId: string }) {
+  const [collections, items] = await Promise.all([
+    getCollections(userId),
+    getItems(userId),
+  ]);
+  return (
+    <PinnedItems
+      pinnedCollections={collections.filter(c => c.isPinned)}
+      pinnedItems={items.filter(i => i.isPinned)}
+    />
+  );
+}
 
-  const pinnedCollectionsFull = collections.filter(c => c.isPinned);
-  const pinnedItemsFull = items.filter(i => i.isPinned);
-  const favoriteCollectionsFull = collections.filter(c => c.isFavorite);
-  const favoriteItemsFull = items.filter(i => i.isFavorite);
+async function FavoritesSection({ userId }: { userId: string }) {
+  const [collections, items] = await Promise.all([
+    getCollections(userId),
+    getItems(userId),
+  ]);
+  return (
+    <FavoriteItems
+      favoriteCollections={collections.filter(c => c.isFavorite)}
+      favoriteItems={items.filter(i => i.isFavorite)}
+    />
+  );
+}
+
+async function CollectionsSection({ userId }: { userId: string }) {
+  const collections = await getCollections(userId);
+  return <Collections collections={collections} />;
+}
+
+async function ItemsSection({ userId }: { userId: string }) {
+  const items = await getItems(userId);
+  return <Items items={items} />;
+}
+
+async function RecentSection({ userId }: { userId: string }) {
+  const [collections, items] = await Promise.all([
+    getCollections(userId),
+    getItems(userId),
+  ]);
+  return (
+    <RecentCarousel
+      recentCollections={collections.slice(0, 3)}
+      recentItems={items.slice(0, 3)}
+    />
+  );
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+export default async function DashboardPage() {
+  const user = await getUserByEmail('demo@devstash.io');
+  const userId = user?.id ?? '';
 
   return (
     <main className='main-scroll flex-1 overflow-y-auto p-6'>
@@ -37,12 +91,41 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <StatsCards collectionStats={collectionStats} itemStats={itemStats} />
-        <PinnedItems pinnedCollections={pinnedCollectionsFull} pinnedItems={pinnedItemsFull} />
-        <FavoriteItems favoriteCollections={favoriteCollectionsFull} favoriteItems={favoriteItemsFull} />
-        <Collections collections={collections} />
-        <Items items={items} />
-        <RecentCarousel recentCollections={collections.slice(0, 3)} recentItems={items.slice(0, 3)} />
+        <SectionErrorBoundary>
+          <Suspense fallback={<StatsSkeleton />}>
+            <StatsSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
+
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <PinnedSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
+
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <FavoritesSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
+
+        <SectionErrorBoundary>
+          <Suspense fallback={<GridSkeleton />}>
+            <CollectionsSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
+
+        <SectionErrorBoundary>
+          <Suspense fallback={<GridSkeleton />}>
+            <ItemsSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
+
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <RecentSection userId={userId} />
+          </Suspense>
+        </SectionErrorBoundary>
       </div>
     </main>
   );
