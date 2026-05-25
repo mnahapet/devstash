@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-context";
+import { SidebarProvider } from "@/components/layout/sidebar-context";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -24,7 +25,9 @@ export default function RootLayout({
       className={`${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SidebarProvider>{children}</SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

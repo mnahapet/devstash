@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 
 export type ItemTypeWithCount = {
@@ -8,7 +9,7 @@ export type ItemTypeWithCount = {
   count: number;
 };
 
-export async function getItemTypesWithCounts(userId: string): Promise<ItemTypeWithCount[]> {
+export const getItemTypesWithCounts = cache(async (userId: string): Promise<ItemTypeWithCount[]> => {
   const [types, counts] = await Promise.all([
     prisma.itemType.findMany({
       where: { isSystem: true },
@@ -24,4 +25,4 @@ export async function getItemTypesWithCounts(userId: string): Promise<ItemTypeWi
   const countMap = new Map(counts.map(c => [c.itemTypeId, c._count.id]));
 
   return types.map(t => ({ ...t, count: countMap.get(t.id) ?? 0 }));
-}
+});

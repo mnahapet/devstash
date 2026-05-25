@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 
 export type CollectionWithStats = {
@@ -25,7 +26,7 @@ export function deriveCollectionStats(collections: CollectionWithStats[]): Colle
   };
 }
 
-export async function getCollections(userId: string): Promise<CollectionWithStats[]> {
+export const getCollections = cache(async (userId: string): Promise<CollectionWithStats[]> => {
   const collections = await prisma.collection.findMany({
     where: { userId },
     orderBy: { updatedAt: 'desc' },
@@ -78,5 +79,5 @@ export async function getCollections(userId: string): Promise<CollectionWithStat
       updatedAt: col.updatedAt,
     };
   });
-}
+});
 

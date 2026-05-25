@@ -222,3 +222,10 @@ Not Started
   - [x] All conditional items render nothing (no placeholder) when backing data is absent
   - [x] Both desktop collapsed aside and mobile mini aside use identical props
   - [x] Spec created at `context/features/sidebar-mini-spec.md`
+- Sidebar layout restructure & toggle fix
+  - [x] `Sidebar` moved from `dashboard/page.tsx` into `(dashboard)/layout.tsx` so it persists across all dashboard routes (not just `/dashboard`)
+  - [x] `SidebarProvider` moved from `(dashboard)/layout.tsx` into root `app/layout.tsx` so toggle state survives navigating to any URL (including 404s) and pressing back
+  - [x] All four DB functions wrapped with React `cache()` (`getUserByEmail`, `getCollections`, `getItems`, `getItemTypesWithCounts`) so layout and page share one DB round-trip per request
+  - [x] `dashboard/page.tsx` stripped of Sidebar rendering, sidebar-derived arrays, and `export const dynamic` (now on layout)
+  - [x] `loading.tsx` fixed: removed `SidebarSkeleton` which was creating a second sidebar in the flex row during loading, squishing the real sidebar's toggle button off-screen
+  - [x] Root cause note: sidebar links to `/collections/[id]`, `/items/[type]`, etc. have no pages yet inside `(dashboard)`, so those navigations still exit the layout; toggle will work correctly once those sub-pages are built

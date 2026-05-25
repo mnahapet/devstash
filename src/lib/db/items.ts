@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { prisma } from '@/lib/prisma';
 
 export type ItemWithType = {
@@ -18,7 +19,7 @@ export type ItemStats = {
   favorites: number;
 };
 
-export async function getItems(userId: string): Promise<ItemWithType[]> {
+export const getItems = cache(async (userId: string): Promise<ItemWithType[]> => {
   const rows = await prisma.item.findMany({
     where: { userId },
     orderBy: { updatedAt: 'desc' },
@@ -48,7 +49,7 @@ export async function getItems(userId: string): Promise<ItemWithType[]> {
     ...item,
     inFavoriteCollection: collections.some(ic => ic.collection.isFavorite),
   }));
-}
+});
 
 export function deriveItemStats(items: ItemWithType[]): ItemStats {
   return {
