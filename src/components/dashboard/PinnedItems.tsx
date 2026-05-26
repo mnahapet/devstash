@@ -12,10 +12,7 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import { CollectionCarouselCard, ItemCarouselCard } from '@/components/dashboard/shared/carousel-cards';
-
-type PinnedCard =
-  | { kind: 'collection'; data: CollectionWithStats }
-  | { kind: 'item'; data: ItemWithType };
+import type { CarouselCard } from '@/types/dashboard';
 
 interface Props {
   pinnedCollections: CollectionWithStats[];
@@ -28,7 +25,7 @@ export default function PinnedItems({ pinnedCollections, pinnedItems }: Props) {
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  const allPinned = useMemo<PinnedCard[]>(() => [
+  const allPinned = useMemo<CarouselCard[]>(() => [
     ...pinnedCollections.map(c => ({ kind: 'collection' as const, data: c })),
     ...pinnedItems.map(i => ({ kind: 'item' as const, data: i })),
   ], [pinnedCollections, pinnedItems]);

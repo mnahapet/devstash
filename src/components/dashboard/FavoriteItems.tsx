@@ -12,10 +12,7 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import { CollectionCarouselCard, ItemCarouselCard } from '@/components/dashboard/shared/carousel-cards';
-
-type FavoriteCard =
-  | { kind: 'collection'; data: CollectionWithStats }
-  | { kind: 'item'; data: ItemWithType };
+import type { CarouselCard } from '@/types/dashboard';
 
 interface Props {
   favoriteCollections: CollectionWithStats[];
@@ -28,7 +25,7 @@ export default function FavoriteItems({ favoriteCollections, favoriteItems }: Pr
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  const allFavorites = useMemo<FavoriteCard[]>(() => [
+  const allFavorites = useMemo<CarouselCard[]>(() => [
     ...favoriteCollections.map(c => ({ kind: 'collection' as const, data: c })),
     ...favoriteItems.map(i => ({ kind: 'item' as const, data: i })),
   ], [favoriteCollections, favoriteItems]);

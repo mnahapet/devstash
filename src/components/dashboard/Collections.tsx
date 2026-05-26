@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Star, Pin, Heart, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CollectionWithStats } from '@/lib/db/collections';
@@ -19,6 +19,10 @@ export default function Collections({ collections }: Props) {
   const totalPages = Math.ceil(collections.length / PAGE_SIZE);
   const paged = collections.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  useEffect(() => {
+    if (page > Math.max(1, totalPages)) setPage(Math.max(1, totalPages));
+  }, [collections.length, page, totalPages]);
+
   return (
     <section aria-labelledby='collections-heading'>
       <div className='flex items-center justify-between mb-3'>
@@ -30,6 +34,7 @@ export default function Collections({ collections }: Props) {
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
+              aria-label='Previous page'
               className='p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
             >
               <ChevronLeft className='h-4 w-4' />
@@ -40,6 +45,7 @@ export default function Collections({ collections }: Props) {
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
+              aria-label='Next page'
               className='p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
             >
               <ChevronRight className='h-4 w-4' />

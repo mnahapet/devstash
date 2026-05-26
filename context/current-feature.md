@@ -262,6 +262,14 @@ Completed
   - [x] `error.tsx` added at `(dashboard)/dashboard/` — catches page-level errors, centered UI with "Try again" reset
   - [x] `error.tsx` added at `(dashboard)/` — catches layout-level errors (sidebar/auth), full-screen UI with reset
   - [x] Spec created at `context/features/loading-error-spec.md`
+- Code quality & polish fixes
+  - [x] `carousel.tsx` (shadcn base) `reInit` cleanup gap closed — `api?.off("reInit", onSelect)` added to the `useEffect` return; `PinnedItems`, `FavoriteItems`, `RecentCarousel` were already correct
+  - [x] `CarouselCard` discriminated union extracted to `src/types/dashboard.ts`; local `PinnedCard`, `FavoriteCard`, `RecentCard` types removed from the three carousel files
+  - [x] Pagination buttons in `Collections.tsx` and `Items.tsx` given `aria-label='Previous page'` / `aria-label='Next page'`
+  - [x] Page clamping `useEffect` added to `Collections.tsx` and `Items.tsx` — resets to last valid page after `router.refresh()` shrinks the data set
+  - [x] `SectionErrorBoundary.tsx` deleted — component was unreachable; errors from `Promise.all` propagate before any React boundary, so `error.tsx` is the correct handler
+  - [x] `icon.tsx` favicon `stroke="black"` changed to `stroke="currentColor"` — safe default if SVG is ever reused outside the OG renderer
+
 - Code quality & security review fixes
   - [x] Null user guard: `layout.tsx` and `page.tsx` redirect to `/login` instead of silently querying with empty userId
   - [x] Error messages sanitised: `error.tsx` (both levels) and `SectionErrorBoundary` show `error.message` only in development, generic text in production

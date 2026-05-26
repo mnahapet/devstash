@@ -12,10 +12,7 @@ import {
   type CarouselApi,
 } from '@/components/ui/carousel';
 import { CollectionCarouselCard, ItemCarouselCard } from '@/components/dashboard/shared/carousel-cards';
-
-type RecentCard =
-  | { kind: 'collection'; data: CollectionWithStats }
-  | { kind: 'item'; data: ItemWithType };
+import type { CarouselCard } from '@/types/dashboard';
 
 interface Props {
   recentCollections: CollectionWithStats[];
@@ -28,7 +25,7 @@ export default function RecentCarousel({ recentCollections, recentItems }: Props
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
 
-  const allRecent = useMemo<RecentCard[]>(() => [
+  const allRecent = useMemo<CarouselCard[]>(() => [
     ...recentCollections.map(c => ({ kind: 'collection' as const, data: c })),
     ...recentItems.map(i => ({ kind: 'item' as const, data: i })),
   ], [recentCollections, recentItems]);
