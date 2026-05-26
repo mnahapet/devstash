@@ -1,27 +1,30 @@
-# Current Feature: Server-Side Pagination
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- `getCollections` and `getItems` fetch only one page of rows (`take`/`skip`) instead of the full table
-- Stats (total + favorites counts) come from dedicated `COUNT` queries, not in-memory array derivation
-- Pagination state lives in URL searchParams (`?collectionsPage=` / `?itemsPage=`), not client `useState`
-- Pinned, Favorites, and Recent carousels each have their own targeted DB queries with `take` limits
-- `deriveCollectionStats` and `deriveItemStats` removed (replaced by DB count queries)
-- Build passes with no type errors
+<!-- List goals here -->
 
 ## Notes
 
-- `getCollectionStats` handles the count so `getCollections` doesn't need an internal COUNT — no duplicate queries
-- Carousels (`PinnedItems`, `FavoriteItems`, `RecentCarousel`) need the full `CollectionWithStats` / `ItemWithType` shapes — targeted queries return the same types, just with `take` limits
-- `searchParams` in Next.js 16 page.tsx is a `Promise` — must be awaited
-- Pagination links use `<Link>` — navigating collections page resets items page (and vice versa); acceptable UX for a dashboard
-- No changes needed to carousel component files — only their data source changes in `page.tsx`
+<!-- Add notes here -->
 
 ## History
+
+- Server-side pagination with per-section streaming and error boundaries
+  - [x] `getCollections` and `getItems` paginated with `skip`/`take`; no more full table scans
+  - [x] `getCollectionStats` / `getItemStats` added — two `COUNT` queries each; `deriveCollectionStats` / `deriveItemStats` removed
+  - [x] `getPinnedCollections`, `getFavoriteCollections`, `getRecentCollections` added with `take` limits; same for items
+  - [x] Pagination state moved to URL searchParams (`?collectionsPage=` / `?itemsPage=`) via `<Link>` navigation in `Collections.tsx` and `Items.tsx`
+  - [x] Dashboard split into 6 async server section components in `src/components/dashboard/sections/`
+  - [x] Each section wrapped in `<SectionErrorBoundary><Suspense fallback={skeleton}>` — sections stream independently, failures degrade inline
+  - [x] `SectionErrorBoundary` recreated as class + functional wrapper; Retry calls `router.refresh()` to re-fetch server data
+  - [x] `page.tsx` reduced to auth + searchParams parsing + section composition only
+
+
 
 - Accessibility & theme flash fixes
   - [x] Carousel `useEffect` listener leak fixed in `PinnedItems.tsx`, `FavoriteItems.tsx`, `RecentCarousel.tsx` — added `return () => { api.off('select', update); api.off('reInit', update); }` cleanup to prevent stacking listeners on re-render
