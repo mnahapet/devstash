@@ -262,6 +262,9 @@ Completed
   - [x] `error.tsx` added at `(dashboard)/dashboard/` — catches page-level errors, centered UI with "Try again" reset
   - [x] `error.tsx` added at `(dashboard)/` — catches layout-level errors (sidebar/auth), full-screen UI with reset
   - [x] Spec created at `context/features/loading-error-spec.md`
+- Hydration mismatch fix
+  - [x] `suppressHydrationWarning` added to `<html>` in `layout.tsx` — the blocking theme script adds `dark` to `classList` before React hydrates, causing a server/client className mismatch; suppressing on `<html>` only is the correct scoped fix
+
 - Code quality & polish fixes
   - [x] `carousel.tsx` (shadcn base) `reInit` cleanup gap closed — `api?.off("reInit", onSelect)` added to the `useEffect` return; `PinnedItems`, `FavoriteItems`, `RecentCarousel` were already correct
   - [x] `CarouselCard` discriminated union extracted to `src/types/dashboard.ts`; local `PinnedCard`, `FavoriteCard`, `RecentCard` types removed from the three carousel files
