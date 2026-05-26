@@ -29,7 +29,9 @@ import { ICON_MAP, getDominantTypeColor } from '@/lib/constants/item-types';
 function getUserInitials(name: string | null): string {
   if (!name) return '?';
   return name
-    .split(' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
     .map(n => n[0])
     .join('')
     .toUpperCase()

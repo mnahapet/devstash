@@ -14,6 +14,11 @@ Completed
 
 ## History
 
+- UI & type fixes
+  - [x] Active carousel ring changed from `ring-white/50` to `ring-foreground/20` in `PinnedItems.tsx`, `FavoriteItems.tsx`, `RecentCarousel.tsx` — was invisible in light mode
+  - [x] `getUserInitials` in `Sidebar.tsx` fixed: `.split(' ')` → `.trim().split(/\s+/).filter(Boolean)` — prevents `undefined[0]` on names with leading/trailing or multiple spaces
+  - [x] Local `interface Item` removed from `ItemCard.tsx` and `ItemRow.tsx`; both now import `ItemWithType` from `@/lib/db/items` — eliminates type duplication and drift risk
+
 - Bug fixes & DB index hardening
   - [x] `layout.tsx` refactored to call `getSidebarData(userId)` (6 targeted lean queries with TAKE limits) instead of full `getCollections`/`getItems` — eliminates overlap with `page.tsx` and removes reliance on `cache()` deduplication across layout/page boundary
   - [x] `src/lib/db/sidebar.ts` created: `getSidebarData` fetches only the fields/rows the sidebar needs, returns typed `SidebarData` object

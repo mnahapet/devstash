@@ -85,7 +85,7 @@ export default function RecentCarousel({ recentCollections, recentItems }: Props
         <CarouselContent className='-ml-3'>
           {allRecent.map((card, i) => (
             <CarouselItem key={`${card.kind}-${card.data.id}`} className='pl-3 sm:basis-1/2 lg:basis-1/3'>
-              <div className={cn('h-full rounded-lg transition-all duration-200', i === current ? 'ring-1 ring-white/50' : '')}>
+              <div className={cn('h-full rounded-lg transition-all duration-200', i === current ? 'ring-1 ring-foreground/20' : '')}>
                 {card.kind === 'collection'
                   ? <CollectionCarouselCard col={card.data} />
                   : <ItemCarouselCard item={card.data} />}

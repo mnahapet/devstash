@@ -1,19 +1,8 @@
 import { Star, Pin, Heart } from 'lucide-react';
 import { ICON_MAP } from '@/lib/constants/item-types';
+import type { ItemWithType } from '@/lib/db/items';
 
-interface Item {
-  id: string;
-  title: string;
-  description?: string | null;
-  isFavorite: boolean;
-  isPinned: boolean;
-  inFavoriteCollection: boolean;
-  itemType: { icon: string; color: string };
-  tags: { id: string; name: string }[];
-  createdAt: Date;
-}
-
-export default function ItemCard({ item }: { item: Item }) {
+export default function ItemCard({ item }: { item: ItemWithType }) {
   const Icon = ICON_MAP[item.itemType.icon] ?? null;
 
   const date = item.createdAt.toLocaleDateString('en-US', {
