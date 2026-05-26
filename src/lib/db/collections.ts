@@ -19,65 +19,114 @@ export type CollectionStats = {
   favorites: number;
 };
 
-export function deriveCollectionStats(collections: CollectionWithStats[]): CollectionStats {
-  return {
-    total: collections.length,
-    favorites: collections.filter(c => c.isFavorite).length,
-  };
-}
-
-export const getCollections = cache(async (userId: string): Promise<CollectionWithStats[]> => {
-  const collections = await prisma.collection.findMany({
-    where: { userId },
-    orderBy: { updatedAt: 'desc' },
+const COLLECTION_INCLUDE = {
+  items: {
     include: {
-      items: {
-        include: {
-          item: {
-            select: {
-              itemTypeId: true,
-              isFavorite: true,
-              itemType: { select: { id: true, color: true, icon: true } },
-            },
-          },
+      item: {
+        select: {
+          itemTypeId: true,
+          isFavorite: true,
+          itemType: { select: { id: true, color: true, icon: true } },
         },
       },
     },
-  });
+  },
+} as const;
 
-  return collections.map((col) => {
-    const typeCounts = new Map<string, { color: string; icon: string; count: number }>();
-    let hasFavoriteItem = false;
-
-    for (const { item } of col.items) {
-      if (item.isFavorite) hasFavoriteItem = true;
-      const entry = typeCounts.get(item.itemTypeId);
-      if (entry) {
-        entry.count++;
-      } else {
-        typeCounts.set(item.itemTypeId, {
-          color: item.itemType.color,
-          icon: item.itemType.icon,
-          count: 1,
-        });
-      }
-    }
-
-    return {
-      id: col.id,
-      name: col.name,
-      description: col.description,
-      isFavorite: col.isFavorite,
-      isPinned: col.isPinned,
-      hasFavoriteItem,
-      itemCount: col.items.length,
-      typeDistribution: Array.from(typeCounts.entries()).map(([typeId, data]) => ({
-        typeId,
-        ...data,
-      })),
-      createdAt: col.createdAt,
-      updatedAt: col.updatedAt,
+type RawCollection = {
+  id: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+  isPinned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  items: {
+    item: {
+      itemTypeId: string;
+      isFavorite: boolean;
+      itemType: { id: string; color: string; icon: string };
     };
-  });
+  }[];
+};
+
+function toCollectionWithStats(col: RawCollection): CollectionWithStats {
+  const typeCounts = new Map<string, { color: string; icon: string; count: number }>();
+  let hasFavoriteItem = false;
+
+  for (const { item } of col.items) {
+    if (item.isFavorite) hasFavoriteItem = true;
+    const entry = typeCounts.get(item.itemTypeId);
+    if (entry) {
+      entry.count++;
+    } else {
+      typeCounts.set(item.itemTypeId, { color: item.itemType.color, icon: item.itemType.icon, count: 1 });
+    }
+  }
+
+  return {
+    id: col.id,
+    name: col.name,
+    description: col.description,
+    isFavorite: col.isFavorite,
+    isPinned: col.isPinned,
+    hasFavoriteItem,
+    itemCount: col.items.length,
+    typeDistribution: Array.from(typeCounts.entries()).map(([typeId, data]) => ({ typeId, ...data })),
+    createdAt: col.createdAt,
+    updatedAt: col.updatedAt,
+  };
+}
+
+export const getCollectionStats = cache(async (userId: string): Promise<CollectionStats> => {
+  const [total, favorites] = await Promise.all([
+    prisma.collection.count({ where: { userId } }),
+    prisma.collection.count({ where: { userId, isFavorite: true } }),
+  ]);
+  return { total, favorites };
 });
 
+export const getCollections = cache(async (
+  userId: string,
+  page = 1,
+  pageSize = 6,
+): Promise<CollectionWithStats[]> => {
+  const rows = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { updatedAt: 'desc' },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+    include: COLLECTION_INCLUDE,
+  });
+  return rows.map(toCollectionWithStats);
+});
+
+export const getPinnedCollections = cache(async (userId: string): Promise<CollectionWithStats[]> => {
+  const rows = await prisma.collection.findMany({
+    where: { userId, isPinned: true },
+    orderBy: { updatedAt: 'desc' },
+    take: 10,
+    include: COLLECTION_INCLUDE,
+  });
+  return rows.map(toCollectionWithStats);
+});
+
+export const getFavoriteCollections = cache(async (userId: string): Promise<CollectionWithStats[]> => {
+  const rows = await prisma.collection.findMany({
+    where: { userId, isFavorite: true },
+    orderBy: { updatedAt: 'desc' },
+    take: 10,
+    include: COLLECTION_INCLUDE,
+  });
+  return rows.map(toCollectionWithStats);
+});
+
+export const getRecentCollections = cache(async (userId: string): Promise<CollectionWithStats[]> => {
+  const rows = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { updatedAt: 'desc' },
+    take: 3,
+    include: COLLECTION_INCLUDE,
+  });
+  return rows.map(toCollectionWithStats);
+});

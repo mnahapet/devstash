@@ -1,27 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Star, Pin, Heart, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CollectionWithStats } from '@/lib/db/collections';
 import { useView } from './view-context';
 import { ICON_MAP, getDominantTypeColor, buildGradient } from '@/lib/constants/item-types';
 
-const PAGE_SIZE = 6;
-
 interface Props {
   collections: CollectionWithStats[];
+  page: number;
+  totalPages: number;
 }
 
-export default function Collections({ collections }: Props) {
+export default function Collections({ collections, page, totalPages }: Props) {
   const { viewMode } = useView();
-  const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(collections.length / PAGE_SIZE);
-  const paged = collections.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
-  useEffect(() => {
-    if (page > Math.max(1, totalPages)) setPage(Math.max(1, totalPages));
-  }, [collections.length, page, totalPages]);
 
   return (
     <section aria-labelledby='collections-heading'>
@@ -31,32 +23,32 @@ export default function Collections({ collections }: Props) {
         </h2>
         {totalPages > 1 && (
           <div className='flex items-center gap-1'>
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
+            <Link
+              href={page > 1 ? `?collectionsPage=${page - 1}` : '#'}
               aria-label='Previous page'
-              className='p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
+              aria-disabled={page === 1}
+              className={`p-0.5 rounded text-muted-foreground transition-colors ${page === 1 ? 'opacity-30 pointer-events-none' : 'hover:text-foreground'}`}
             >
               <ChevronLeft className='h-4 w-4' />
-            </button>
+            </Link>
             <span className='text-xs text-muted-foreground tabular-nums'>
               {page} / {totalPages}
             </span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
+            <Link
+              href={page < totalPages ? `?collectionsPage=${page + 1}` : '#'}
               aria-label='Next page'
-              className='p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors'
+              aria-disabled={page === totalPages}
+              className={`p-0.5 rounded text-muted-foreground transition-colors ${page === totalPages ? 'opacity-30 pointer-events-none' : 'hover:text-foreground'}`}
             >
               <ChevronRight className='h-4 w-4' />
-            </button>
+            </Link>
           </div>
         )}
       </div>
 
       {viewMode === 'list' ? (
         <div className='space-y-2'>
-          {paged.map(col => {
+          {collections.map(col => {
             const gradient = buildGradient(col.typeDistribution);
 
             return (
@@ -104,7 +96,7 @@ export default function Collections({ collections }: Props) {
         </div>
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
-          {paged.map(col => {
+          {collections.map(col => {
             const gradient = buildGradient(col.typeDistribution);
 
             return (
