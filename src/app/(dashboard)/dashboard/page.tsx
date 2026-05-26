@@ -1,23 +1,30 @@
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/db/users';
-import { getCollections, deriveCollectionStats } from '@/lib/db/collections';
-import { getItems, deriveItemStats } from '@/lib/db/items';
-import StatsCards from '@/components/dashboard/StatsCards';
-import Collections from '@/components/dashboard/Collections';
-import PinnedItems from '@/components/dashboard/PinnedItems';
-import FavoriteItems from '@/components/dashboard/FavoriteItems';
-import Items from '@/components/dashboard/Items';
-import RecentCarousel from '@/components/dashboard/RecentCarousel';
+import SectionErrorBoundary from '@/components/dashboard/SectionErrorBoundary';
+import StatsSection from '@/components/dashboard/sections/StatsSection';
+import PinnedSection from '@/components/dashboard/sections/PinnedSection';
+import FavoritesSection from '@/components/dashboard/sections/FavoritesSection';
+import CollectionsSection from '@/components/dashboard/sections/CollectionsSection';
+import ItemsSection from '@/components/dashboard/sections/ItemsSection';
+import RecentSection from '@/components/dashboard/sections/RecentSection';
+import {
+  StatsSkeleton,
+  CarouselSkeleton,
+  GridSkeleton,
+} from './skeletons';
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ collectionsPage?: string; itemsPage?: string }>;
+}) {
   const user = await getUserByEmail('demo@devstash.io');
   if (!user) redirect('/login');
-  const userId = user.id;
 
-  const [collections, items] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
-  ]);
+  const params = await searchParams;
+  const collectionsPage = Math.max(1, parseInt(params.collectionsPage ?? '1', 10) || 1);
+  const itemsPage = Math.max(1, parseInt(params.itemsPage ?? '1', 10) || 1);
 
   return (
     <main className='main-scroll flex-1 overflow-y-auto p-6'>
@@ -29,29 +36,41 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <StatsCards
-          collectionStats={deriveCollectionStats(collections)}
-          itemStats={deriveItemStats(items)}
-        />
+        <SectionErrorBoundary>
+          <Suspense fallback={<StatsSkeleton />}>
+            <StatsSection userId={user.id} />
+          </Suspense>
+        </SectionErrorBoundary>
 
-        <PinnedItems
-          pinnedCollections={collections.filter(c => c.isPinned)}
-          pinnedItems={items.filter(i => i.isPinned)}
-        />
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <PinnedSection userId={user.id} />
+          </Suspense>
+        </SectionErrorBoundary>
 
-        <FavoriteItems
-          favoriteCollections={collections.filter(c => c.isFavorite)}
-          favoriteItems={items.filter(i => i.isFavorite)}
-        />
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <FavoritesSection userId={user.id} />
+          </Suspense>
+        </SectionErrorBoundary>
 
-        <Collections collections={collections} />
+        <SectionErrorBoundary>
+          <Suspense fallback={<GridSkeleton />}>
+            <CollectionsSection userId={user.id} page={collectionsPage} />
+          </Suspense>
+        </SectionErrorBoundary>
 
-        <Items items={items} />
+        <SectionErrorBoundary>
+          <Suspense fallback={<GridSkeleton />}>
+            <ItemsSection userId={user.id} page={itemsPage} />
+          </Suspense>
+        </SectionErrorBoundary>
 
-        <RecentCarousel
-          recentCollections={collections.slice(0, 3)}
-          recentItems={items.slice(0, 3)}
-        />
+        <SectionErrorBoundary>
+          <Suspense fallback={<CarouselSkeleton />}>
+            <RecentSection userId={user.id} />
+          </Suspense>
+        </SectionErrorBoundary>
       </div>
     </main>
   );
