@@ -14,6 +14,7 @@ export default function DashboardLoading() {
         <CarouselSkeleton />
         <GridSkeleton />
         <GridSkeleton />
+        <CarouselSkeleton />
       </div>
 
       {/* Spinner centered over skeleton */}

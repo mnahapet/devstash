@@ -14,6 +14,15 @@ Completed
 
 ## History
 
+- Bug fixes & DB index hardening
+  - [x] `layout.tsx` refactored to call `getSidebarData(userId)` (6 targeted lean queries with TAKE limits) instead of full `getCollections`/`getItems` — eliminates overlap with `page.tsx` and removes reliance on `cache()` deduplication across layout/page boundary
+  - [x] `src/lib/db/sidebar.ts` created: `getSidebarData` fetches only the fields/rows the sidebar needs, returns typed `SidebarData` object
+  - [x] Pin icon in Sidebar PINNED section fixed: `fill-white text-white` → `fill-foreground text-foreground` so it is visible in light mode
+  - [x] `JSON.parse` in `sidebar-context.tsx` wrapped in `try/catch` that clears the corrupt key — prevents a bad localStorage value from crashing the entire sidebar provider
+  - [x] `DATABASE_URL!` non-null assertion in `prisma.ts` replaced with explicit guard that throws a clear startup error message
+  - [x] `loading.tsx` missing third `<CarouselSkeleton />` added (matches `RecentCarousel` at bottom of dashboard page) — fixes layout shift on load
+  - [x] `@@index([collectionId])` added to `ItemCollection` join table in `schema.prisma`; migration `20260526171130_add_item_collections_collection_id_index` created and applied
+
 <!-- Keep this updated. Earliest to latest -->
 
 - next.js cleanup and tailwind setup

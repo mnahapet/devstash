@@ -263,7 +263,7 @@ function SidebarContent({
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
                   <span className='flex-1 truncate'>{col.name}</span>
                   <span className='text-xs text-muted-foreground'>{col.itemCount}</span>
                 </Link>
@@ -275,7 +275,7 @@ function SidebarContent({
                   onClick={onClose}
                   className='flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm hover:bg-accent transition-colors'
                 >
-                  <Pin className='h-3.5 w-3.5 shrink-0 fill-white text-white' />
+                  <Pin className='h-3.5 w-3.5 shrink-0 fill-foreground text-foreground' />
                   <span className='flex-1 truncate'>{item.title}</span>
                 </Link>
               ))}

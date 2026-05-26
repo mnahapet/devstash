@@ -5,9 +5,8 @@ import Sidebar from '@/components/layout/Sidebar';
 import { ViewProvider } from '@/components/dashboard/view-context';
 import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/db/users';
-import { getCollections } from '@/lib/db/collections';
-import { getItems } from '@/lib/db/items';
 import { getItemTypesWithCounts } from '@/lib/db/item-types';
+import { getSidebarData } from '@/lib/db/sidebar';
 
 export default async function DashboardLayout({
   children,
@@ -18,47 +17,21 @@ export default async function DashboardLayout({
   if (!user) redirect('/login');
   const userId = user.id;
 
-  const [collections, items, itemTypes] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
+  const [sidebarData, itemTypes] = await Promise.all([
+    getSidebarData(userId),
     getItemTypesWithCounts(userId),
   ]);
 
   const sidebarUser = { name: user?.name ?? null, email: user?.email ?? '' };
 
-  const pinnedCollections = collections
-    .filter(c => c.isPinned)
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 1)
-    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
-
-  const pinnedItems = items
-    .filter(i => i.isPinned)
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 1)
-    .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
-
-  const favoriteCollections = collections
-    .filter(c => c.isFavorite)
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3)
-    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
-
-  const favoriteItems = items
-    .filter(i => i.isFavorite)
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3)
-    .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
-
-  const recentCollections = collections
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3)
-    .map(c => ({ id: c.id, name: c.name, itemCount: c.itemCount, typeDistribution: c.typeDistribution }));
-
-  const recentItems = items
-    .toSorted((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3)
-    .map(i => ({ id: i.id, title: i.title, itemType: i.itemType }));
+  const {
+    pinnedCollections,
+    pinnedItems,
+    favoriteCollections,
+    favoriteItems,
+    recentCollections,
+    recentItems,
+  } = sidebarData;
 
   return (
     <ViewProvider>
