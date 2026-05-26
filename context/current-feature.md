@@ -239,3 +239,12 @@ Completed
   - [x] `error.tsx` added at `(dashboard)/dashboard/` — catches page-level errors, centered UI with "Try again" reset
   - [x] `error.tsx` added at `(dashboard)/` — catches layout-level errors (sidebar/auth), full-screen UI with reset
   - [x] Spec created at `context/features/loading-error-spec.md`
+- Code quality & security review fixes
+  - [x] Null user guard: `layout.tsx` and `page.tsx` redirect to `/login` instead of silently querying with empty userId
+  - [x] Error messages sanitised: `error.tsx` (both levels) and `SectionErrorBoundary` show `error.message` only in development, generic text in production
+  - [x] `getDominantTypeColor` and `buildGradient` consolidated into `src/lib/constants/item-types.ts`; `Collections.tsx` and `carousel-cards.tsx` import from there
+  - [x] `ICON_MAP` moved to `src/lib/constants/item-types.ts`; all five local copies removed from `Sidebar.tsx`, `Collections.tsx`, `ItemCard.tsx`, `ItemRow.tsx`, `carousel-cards.tsx`
+  - [x] `SectionErrorBoundary` Retry now calls `router.refresh()` (via functional wrapper + `useRouter`) so the server actually re-fetches data instead of re-rendering stale state
+  - [x] Dashboard page refactored: single `Promise.all([getCollections, getItems])` in `DashboardPage`; all six intermediate async section components and their `Suspense` fallbacks removed
+  - [x] Sidebar types consolidated: `SidebarFavCollection`, `SidebarRecentCollection`, `SidebarPinnedCollection` → `SidebarCollection`; `SidebarFavItem`, `SidebarRecentItem`, `SidebarPinnedItem` → `SidebarItem`
+  - [x] DB indexes: composite `(userId, updatedAt DESC)` added to `items` and `collections`; redundant `items_userId_idx`, `items_createdAt_idx`, `collections_userId_idx` dropped; migration `20260526120000_add_userid_updatedat_indexes` applied

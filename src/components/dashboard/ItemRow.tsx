@@ -1,26 +1,5 @@
-import {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link as LinkIcon,
-  Star,
-  Pin,
-  Heart,
-  type LucideIcon,
-} from 'lucide-react';
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link: LinkIcon,
-};
+import { Star, Pin, Heart } from 'lucide-react';
+import { ICON_MAP } from '@/lib/constants/item-types';
 
 interface Item {
   id: string;

@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import TopBar from '@/components/layout/TopBar';
 import Sidebar from '@/components/layout/Sidebar';
 import { ViewProvider } from '@/components/dashboard/view-context';
+import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/db/users';
 import { getCollections } from '@/lib/db/collections';
 import { getItems } from '@/lib/db/items';
@@ -14,7 +15,8 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserByEmail('demo@devstash.io');
-  const userId = user?.id ?? '';
+  if (!user) redirect('/login');
+  const userId = user.id;
 
   const [collections, items, itemTypes] = await Promise.all([
     getCollections(userId),

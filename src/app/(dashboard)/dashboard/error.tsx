@@ -24,7 +24,9 @@ export default function DashboardError({
         <div className='space-y-1'>
           <h2 className='text-lg font-semibold'>Something went wrong</h2>
           <p className='text-sm text-muted-foreground'>
-            {error.message || 'Failed to load dashboard data.'}
+            {process.env.NODE_ENV === 'development'
+              ? error.message
+              : 'Failed to load dashboard data.'}
           </p>
           {error.digest && (
             <p className='text-xs text-muted-foreground/60'>

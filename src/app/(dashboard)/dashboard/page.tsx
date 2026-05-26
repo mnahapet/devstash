@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/db/users';
 import { getCollections, deriveCollectionStats } from '@/lib/db/collections';
 import { getItems, deriveItemStats } from '@/lib/db/items';
@@ -9,77 +9,16 @@ import FavoriteItems from '@/components/dashboard/FavoriteItems';
 import Items from '@/components/dashboard/Items';
 import RecentCarousel from '@/components/dashboard/RecentCarousel';
 import { SectionErrorBoundary } from '@/components/dashboard/SectionErrorBoundary';
-import { StatsSkeleton, CarouselSkeleton, GridSkeleton } from './skeletons';
-
-// ─── Async section components ────────────────────────────────────────────────
-
-async function StatsSection({ userId }: { userId: string }) {
-  const [collections, items] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
-  ]);
-  return (
-    <StatsCards
-      collectionStats={deriveCollectionStats(collections)}
-      itemStats={deriveItemStats(items)}
-    />
-  );
-}
-
-async function PinnedSection({ userId }: { userId: string }) {
-  const [collections, items] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
-  ]);
-  return (
-    <PinnedItems
-      pinnedCollections={collections.filter(c => c.isPinned)}
-      pinnedItems={items.filter(i => i.isPinned)}
-    />
-  );
-}
-
-async function FavoritesSection({ userId }: { userId: string }) {
-  const [collections, items] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
-  ]);
-  return (
-    <FavoriteItems
-      favoriteCollections={collections.filter(c => c.isFavorite)}
-      favoriteItems={items.filter(i => i.isFavorite)}
-    />
-  );
-}
-
-async function CollectionsSection({ userId }: { userId: string }) {
-  const collections = await getCollections(userId);
-  return <Collections collections={collections} />;
-}
-
-async function ItemsSection({ userId }: { userId: string }) {
-  const items = await getItems(userId);
-  return <Items items={items} />;
-}
-
-async function RecentSection({ userId }: { userId: string }) {
-  const [collections, items] = await Promise.all([
-    getCollections(userId),
-    getItems(userId),
-  ]);
-  return (
-    <RecentCarousel
-      recentCollections={collections.slice(0, 3)}
-      recentItems={items.slice(0, 3)}
-    />
-  );
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
   const user = await getUserByEmail('demo@devstash.io');
-  const userId = user?.id ?? '';
+  if (!user) redirect('/login');
+  const userId = user.id;
+
+  const [collections, items] = await Promise.all([
+    getCollections(userId),
+    getItems(userId),
+  ]);
 
   return (
     <main className='main-scroll flex-1 overflow-y-auto p-6'>
@@ -92,39 +31,39 @@ export default async function DashboardPage() {
         </div>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<StatsSkeleton />}>
-            <StatsSection userId={userId} />
-          </Suspense>
+          <StatsCards
+            collectionStats={deriveCollectionStats(collections)}
+            itemStats={deriveItemStats(items)}
+          />
         </SectionErrorBoundary>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<CarouselSkeleton />}>
-            <PinnedSection userId={userId} />
-          </Suspense>
+          <PinnedItems
+            pinnedCollections={collections.filter(c => c.isPinned)}
+            pinnedItems={items.filter(i => i.isPinned)}
+          />
         </SectionErrorBoundary>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<CarouselSkeleton />}>
-            <FavoritesSection userId={userId} />
-          </Suspense>
+          <FavoriteItems
+            favoriteCollections={collections.filter(c => c.isFavorite)}
+            favoriteItems={items.filter(i => i.isFavorite)}
+          />
         </SectionErrorBoundary>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<GridSkeleton />}>
-            <CollectionsSection userId={userId} />
-          </Suspense>
+          <Collections collections={collections} />
         </SectionErrorBoundary>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<GridSkeleton />}>
-            <ItemsSection userId={userId} />
-          </Suspense>
+          <Items items={items} />
         </SectionErrorBoundary>
 
         <SectionErrorBoundary>
-          <Suspense fallback={<CarouselSkeleton />}>
-            <RecentSection userId={userId} />
-          </Suspense>
+          <RecentCarousel
+            recentCollections={collections.slice(0, 3)}
+            recentItems={items.slice(0, 3)}
+          />
         </SectionErrorBoundary>
       </div>
     </main>

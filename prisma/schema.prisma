@@ -108,9 +108,8 @@ model Item {
 
   collections ItemCollection[]
 
-  @@index([userId])
   @@index([itemTypeId])
-  @@index([createdAt])
+  @@index([userId, updatedAt(sort: Desc)])
   @@map("items")
 }
 
@@ -153,7 +152,7 @@ model Collection {
 
   items ItemCollection[]
 
-  @@index([userId])
+  @@index([userId, updatedAt(sort: Desc)])
   @@map("collections")
 }
 

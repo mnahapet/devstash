@@ -2,58 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import {
-  Star,
-  Pin,
-  Heart,
-  FolderOpen,
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link as LinkIcon,
-  ChevronLeft,
-  ChevronRight,
-  type LucideIcon,
-} from 'lucide-react';
+import { Star, Pin, Heart, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CollectionWithStats } from '@/lib/db/collections';
 import { useView } from './view-context';
+import { ICON_MAP, getDominantTypeColor, buildGradient } from '@/lib/constants/item-types';
 
 const PAGE_SIZE = 6;
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link: LinkIcon,
-};
-
-function getDominantColor(distribution: CollectionWithStats['typeDistribution']): string {
-  if (!distribution.length) return 'currentColor';
-  return distribution.reduce((max, d) => (d.count > max.count ? d : max)).color;
-}
-
-function buildGradient(distribution: CollectionWithStats['typeDistribution']): string {
-  const total = distribution.reduce((sum, d) => sum + d.count, 0);
-  if (total === 0) return 'transparent';
-
-  let cumulative = 0;
-  const stops: string[] = [];
-
-  for (const { color, count } of distribution) {
-    const start = (cumulative / total) * 100;
-    cumulative += count;
-    const end = (cumulative / total) * 100;
-    stops.push(`${color} ${start}%`, `${color} ${end}%`);
-  }
-
-  return `linear-gradient(to bottom, ${stops.join(', ')})`;
-}
 
 interface Props {
   collections: CollectionWithStats[];
@@ -108,7 +62,7 @@ export default function Collections({ collections }: Props) {
                 <div className='flex flex-1 items-start gap-3 px-4 py-3 min-w-0'>
                   <FolderOpen
                     className='h-4 w-4 shrink-0 mt-0.5'
-                    style={{ color: getDominantColor(col.typeDistribution) }}
+                    style={{ color: getDominantTypeColor(col.typeDistribution) }}
                   />
                   <div className='flex-1 min-w-0'>
                     <div className='flex items-center gap-1.5'>
@@ -158,7 +112,7 @@ export default function Collections({ collections }: Props) {
                     <div className='flex items-center gap-1.5'>
                       <FolderOpen
                         className='h-4 w-4 shrink-0'
-                        style={{ color: getDominantColor(col.typeDistribution) }}
+                        style={{ color: getDominantTypeColor(col.typeDistribution) }}
                       />
                       <span className='text-xs text-muted-foreground'>{col.itemCount} items</span>
                     </div>

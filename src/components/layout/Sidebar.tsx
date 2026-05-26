@@ -3,25 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-
-  Image,
-  Link as LinkIcon,
   ChevronDown,
   Star,
   Heart,
   Pin,
-  Clock,
   FolderOpen,
   Library,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
-  type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -33,32 +23,8 @@ import {
 } from '@/components/ui/sheet';
 import { useSidebar } from './sidebar-context';
 import type { ItemTypeWithCount } from '@/lib/db/item-types';
-import type {
-  SidebarUser,
-  SidebarFavCollection,
-  SidebarFavItem,
-  SidebarRecentCollection,
-  SidebarRecentItem,
-  SidebarPinnedCollection,
-  SidebarPinnedItem,
-} from '@/types/sidebar';
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Code,
-  Sparkles,
-  Terminal,
-  StickyNote,
-  File,
-  Image,
-  Link: LinkIcon,
-};
-
-function getDominantTypeColor(
-  distribution: { color: string; count: number }[]
-): string {
-  if (!distribution.length) return 'currentColor';
-  return distribution.reduce((max, d) => d.count > max.count ? d : max).color;
-}
+import type { SidebarUser, SidebarCollection, SidebarItem } from '@/types/sidebar';
+import { ICON_MAP, getDominantTypeColor } from '@/lib/constants/item-types';
 
 function getUserInitials(name: string | null): string {
   if (!name) return '?';
@@ -74,12 +40,12 @@ function getUserInitials(name: string | null): string {
 interface SidebarProps {
   user: SidebarUser;
   itemTypes: ItemTypeWithCount[];
-  pinnedCollections: SidebarPinnedCollection[];
-  pinnedItems: SidebarPinnedItem[];
-  favoriteCollections: SidebarFavCollection[];
-  favoriteItems: SidebarFavItem[];
-  recentCollections: SidebarRecentCollection[];
-  recentItems: SidebarRecentItem[];
+  pinnedCollections: SidebarCollection[];
+  pinnedItems: SidebarItem[];
+  favoriteCollections: SidebarCollection[];
+  favoriteItems: SidebarItem[];
+  recentCollections: SidebarCollection[];
+  recentItems: SidebarItem[];
 }
 
 function MiniSidebarContent({
@@ -95,11 +61,11 @@ function MiniSidebarContent({
   showToggle = true,
 }: {
   itemTypes: ItemTypeWithCount[];
-  pinnedCollections: SidebarPinnedCollection[];
-  favoriteCollections: SidebarFavCollection[];
-  recentCollections: SidebarRecentCollection[];
-  favoriteItems: SidebarFavItem[];
-  recentItems: SidebarRecentItem[];
+  pinnedCollections: SidebarCollection[];
+  favoriteCollections: SidebarCollection[];
+  recentCollections: SidebarCollection[];
+  favoriteItems: SidebarItem[];
+  recentItems: SidebarItem[];
   user: SidebarUser;
   onClose?: () => void;
   onToggle?: () => void;
