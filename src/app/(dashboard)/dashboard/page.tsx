@@ -8,7 +8,6 @@ import PinnedItems from '@/components/dashboard/PinnedItems';
 import FavoriteItems from '@/components/dashboard/FavoriteItems';
 import Items from '@/components/dashboard/Items';
 import RecentCarousel from '@/components/dashboard/RecentCarousel';
-import { SectionErrorBoundary } from '@/components/dashboard/SectionErrorBoundary';
 
 export default async function DashboardPage() {
   const user = await getUserByEmail('demo@devstash.io');
@@ -30,41 +29,29 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <SectionErrorBoundary>
-          <StatsCards
-            collectionStats={deriveCollectionStats(collections)}
-            itemStats={deriveItemStats(items)}
-          />
-        </SectionErrorBoundary>
+        <StatsCards
+          collectionStats={deriveCollectionStats(collections)}
+          itemStats={deriveItemStats(items)}
+        />
 
-        <SectionErrorBoundary>
-          <PinnedItems
-            pinnedCollections={collections.filter(c => c.isPinned)}
-            pinnedItems={items.filter(i => i.isPinned)}
-          />
-        </SectionErrorBoundary>
+        <PinnedItems
+          pinnedCollections={collections.filter(c => c.isPinned)}
+          pinnedItems={items.filter(i => i.isPinned)}
+        />
 
-        <SectionErrorBoundary>
-          <FavoriteItems
-            favoriteCollections={collections.filter(c => c.isFavorite)}
-            favoriteItems={items.filter(i => i.isFavorite)}
-          />
-        </SectionErrorBoundary>
+        <FavoriteItems
+          favoriteCollections={collections.filter(c => c.isFavorite)}
+          favoriteItems={items.filter(i => i.isFavorite)}
+        />
 
-        <SectionErrorBoundary>
-          <Collections collections={collections} />
-        </SectionErrorBoundary>
+        <Collections collections={collections} />
 
-        <SectionErrorBoundary>
-          <Items items={items} />
-        </SectionErrorBoundary>
+        <Items items={items} />
 
-        <SectionErrorBoundary>
-          <RecentCarousel
-            recentCollections={collections.slice(0, 3)}
-            recentItems={items.slice(0, 3)}
-          />
-        </SectionErrorBoundary>
+        <RecentCarousel
+          recentCollections={collections.slice(0, 3)}
+          recentItems={items.slice(0, 3)}
+        />
       </div>
     </main>
   );

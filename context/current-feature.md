@@ -14,6 +14,15 @@ Completed
 
 ## History
 
+- Accessibility & theme flash fixes
+  - [x] Carousel `useEffect` listener leak fixed in `PinnedItems.tsx`, `FavoriteItems.tsx`, `RecentCarousel.tsx` — added `return () => { api.off('select', update); api.off('reInit', update); }` cleanup to prevent stacking listeners on re-render
+  - [x] `SectionErrorBoundary` removed from `dashboard/page.tsx` — boundaries couldn't catch errors from `Promise.all` above them; page-level `error.tsx` is the correct handler
+  - [x] All five dashboard `<section>` elements given `aria-labelledby` pointing to their `<h2>` `id` — `Collections.tsx`, `Items.tsx`, `PinnedItems.tsx`, `FavoriteItems.tsx`, `RecentCarousel.tsx`
+  - [x] Settings button in `Sidebar.tsx` given `aria-label='Settings'`
+  - [x] Four sidebar collapsible buttons given `aria-expanded` — Pinned, Types, Collections, Items sections in `Sidebar.tsx`
+  - [x] Carousel nav buttons given context-specific `aria-label` values — "Previous/Next pinned item", "Previous/Next favorite", "Previous/Next recent item"
+  - [x] Theme flash on load fixed in `layout.tsx` — removed static `dark` class from `<html>`; added blocking inline `<script>` in `<head>` that reads `localStorage` before paint and toggles `dark` class (defaults to dark)
+
 - UI & type fixes
   - [x] Active carousel ring changed from `ring-white/50` to `ring-foreground/20` in `PinnedItems.tsx`, `FavoriteItems.tsx`, `RecentCarousel.tsx` — was invisible in light mode
   - [x] `getUserInitials` in `Sidebar.tsx` fixed: `.split(' ')` → `.trim().split(/\s+/).filter(Boolean)` — prevents `undefined[0]` on names with leading/trailing or multiple spaces

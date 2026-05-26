@@ -245,6 +245,7 @@ function SidebarContent({
         <div className='mb-4 pb-4 border-b border-border'>
           <button
             onClick={() => setPinnedOpen(prev => !prev)}
+            aria-expanded={pinnedOpen}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
             Pinned
@@ -289,6 +290,7 @@ function SidebarContent({
         <div>
           <button
             onClick={() => setTypesOpen(prev => !prev)}
+            aria-expanded={typesOpen}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
             Types
@@ -336,6 +338,7 @@ function SidebarContent({
         <div className='mt-4 pt-2 border-t border-border'>
           <button
             onClick={() => setCollectionsOpen(prev => !prev)}
+            aria-expanded={collectionsOpen}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
             Collections
@@ -410,6 +413,7 @@ function SidebarContent({
         <div className='mt-4 pt-2 border-t border-border'>
           <button
             onClick={() => setItemsOpen(prev => !prev)}
+            aria-expanded={itemsOpen}
             className='flex items-center justify-between w-full px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors'
           >
             Items
@@ -486,7 +490,7 @@ function SidebarContent({
             <p className='text-sm font-medium truncate'>{user.name ?? 'User'}</p>
             <p className='text-xs text-muted-foreground truncate'>{user.email}</p>
           </div>
-          <Button variant='ghost' size='icon' className='h-7 w-7 shrink-0'>
+          <Button variant='ghost' size='icon' className='h-7 w-7 shrink-0' aria-label='Settings'>
             <Settings className='h-4 w-4' />
           </Button>
         </div>

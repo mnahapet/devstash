@@ -20,9 +20,9 @@ export default function Items({ items }: Props) {
   const paged = items.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <section>
+    <section aria-labelledby='items-heading'>
       <div className='flex items-center justify-between mb-3'>
-        <h2 className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>
+        <h2 id='items-heading' className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>
           Items
         </h2>
         {totalPages > 1 && (

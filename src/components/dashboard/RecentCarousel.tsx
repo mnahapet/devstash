@@ -44,16 +44,20 @@ export default function RecentCarousel({ recentCollections, recentItems }: Props
     update();
     api.on('select', update);
     api.on('reInit', update);
+    return () => {
+      api.off('select', update);
+      api.off('reInit', update);
+    };
   }, [api]);
 
   if (total === 0) return null;
 
   return (
-    <section>
+    <section aria-labelledby='recent-heading'>
       <div className='flex items-center justify-between mb-3'>
         <div className='flex items-center gap-2'>
           <Clock className='h-3.5 w-3.5 text-muted-foreground' />
-          <h2 className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>Recent</h2>
+          <h2 id='recent-heading' className='text-sm font-semibold uppercase tracking-wider text-muted-foreground'>Recent</h2>
         </div>
         <div className='flex items-center gap-1'>
           <button
@@ -63,7 +67,7 @@ export default function RecentCarousel({ recentCollections, recentItems }: Props
               'flex items-center justify-center h-7 w-7 rounded-md border border-border transition-colors',
               !canPrev ? 'opacity-30 cursor-not-allowed' : 'hover:bg-accent hover:text-foreground'
             )}
-            aria-label='Previous'
+            aria-label='Previous recent item'
           >
             <ChevronLeft className='h-4 w-4' />
           </button>
@@ -74,7 +78,7 @@ export default function RecentCarousel({ recentCollections, recentItems }: Props
               'flex items-center justify-center h-7 w-7 rounded-md border border-border transition-colors',
               !canNext ? 'opacity-30 cursor-not-allowed' : 'hover:bg-accent hover:text-foreground'
             )}
-            aria-label='Next'
+            aria-label='Next recent item'
           >
             <ChevronRight className='h-4 w-4' />
           </button>
