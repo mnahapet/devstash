@@ -14,6 +14,9 @@ Completed
 
 ## History
 
+- Hydration mismatch fix
+  - [x] `suppressHydrationWarning` added to `<body>` in `layout.tsx` — browser extensions (e.g. ColorZilla) inject `cz-shortcut-listen="true"` onto `<body>` before React hydrates, causing a server/client attribute mismatch
+
 - Server-side pagination with per-section streaming and error boundaries
   - [x] `getCollections` and `getItems` paginated with `skip`/`take`; no more full table scans
   - [x] `getCollectionStats` / `getItemStats` added — two `COUNT` queries each; `deriveCollectionStats` / `deriveItemStats` removed
