@@ -6,13 +6,18 @@ Completed
 
 ## Goals
 
-<!-- List goals here -->
-
 ## Notes
 
-<!-- Add notes here -->
-
 ## History
+
+- Auth Setup - NextAuth v5 + GitHub Provider
+  - [x] Installed `next-auth@beta` and `@auth/prisma-adapter`
+  - [x] `src/auth.config.ts` — edge-compatible config (GitHub provider only, no Prisma adapter)
+  - [x] `src/auth.ts` — full config with Prisma adapter, JWT strategy, session callback adds `user.id` from token
+  - [x] `src/app/api/auth/[...nextauth]/route.ts` — exports `GET`/`POST` handlers
+  - [x] `src/proxy.ts` — Next.js 16 proxy (replaces `middleware.ts`); redirects unauthenticated `/dashboard/*` requests to `/api/auth/signin?callbackUrl=…`
+  - [x] `src/types/next-auth.d.ts` — extends `Session` with `user.id: string`
+  - [x] Verified: visiting `/dashboard` unauthenticated redirects to NextAuth default sign-in page with "Sign in with GitHub" button
 
 - Hydration mismatch fix
   - [x] `suppressHydrationWarning` added to `<body>` in `layout.tsx` — browser extensions (e.g. ColorZilla) inject `cz-shortcut-listen="true"` onto `<body>` before React hydrates, causing a server/client attribute mismatch
