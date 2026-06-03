@@ -10,6 +10,13 @@ Completed
 
 ## History
 
+- Auth Credentials - Email/Password Provider
+  - [x] `src/auth.config.ts` — added Credentials placeholder with `email`/`password` field definitions (edge-safe, `authorize: () => null`)
+  - [x] `src/auth.ts` — overrides Credentials (filters placeholder by id) with real `authorize`: bcrypt hash compare, returns `{ id, name, email, image }`
+  - [x] `src/app/api/auth/register/route.ts` — `POST /api/auth/register`; validates all fields, passwords match, min 8 chars, no duplicate email (409), bcrypt hash (12 rounds), creates user
+  - [x] Sign-in page shows Email + Password fields alongside GitHub button — verified in browser
+  - [x] Email/password sign-in → dashboard access confirmed via Playwright
+
 - Auth Setup - NextAuth v5 + GitHub Provider
   - [x] Installed `next-auth@beta` and `@auth/prisma-adapter`
   - [x] `src/auth.config.ts` — edge-compatible config (GitHub provider only, no Prisma adapter)
