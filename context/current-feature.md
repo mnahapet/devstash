@@ -1,25 +1,29 @@
-# Current Feature: Auth UI - Sign In, Register & Sign Out
+# Current Feature
 
 ## Status
 
-In Progress
+Completed
 
 ## Goals
 
-- Custom `/sign-in` page with email/password fields, GitHub button, and link to register
-- Custom `/register` page with name/email/password/confirm fields, validation, and submit to `/api/auth/register`
-- Sidebar bottom shows user avatar (GitHub image or initials fallback), name, and sign-out dropdown
-- Avatar click opens dropdown with "Sign out" link; clicking icon navigates to `/profile`
-- Reusable avatar component handles both image and initials cases
-
 ## Notes
 
-- NextAuth must be configured to use `/sign-in` as the custom sign-in page (instead of default `/api/auth/signin`)
-- Avatar logic: use `user.image` if present (GitHub OAuth), otherwise generate initials from name (e.g. "Brad Traversy" → "BT")
-- Register form submits to existing `POST /api/auth/register`; on success, auto-signs in with `signIn('credentials', { email, password, callbackUrl: '/dashboard' })` — no manual sign-in step required (documented in `docs/auth-flow.md`)
-- Form validation: passwords match, email format, min 8-char password
-
 ## History
+
+- Auth UI - Sign In, Register & Sign Out
+  - [x] `src/auth.config.ts` — `pages: { signIn: '/sign-in' }` added so NextAuth uses custom page
+  - [x] `src/proxy.ts` — redirect updated from `/api/auth/signin` to `/sign-in`
+  - [x] `src/app/(auth)/layout.tsx` — centered auth layout (no sidebar)
+  - [x] `src/app/(auth)/sign-in/page.tsx` — email/password form + GitHub OAuth button + link to register; `useSearchParams` wrapped in `<Suspense>`
+  - [x] `src/app/(auth)/register/page.tsx` — name/email/password/confirm form with client-side validation; auto-signs in after successful registration via `signIn('credentials', ...)`
+  - [x] `src/components/auth/UserAvatar.tsx` — reusable avatar: renders GitHub image (`next/image`) or initials fallback
+  - [x] `src/components/layout/Sidebar.tsx` — user area replaced with `UserAvatar` + `DropdownMenu` (Profile → `/profile`, Sign out → `signOut`)
+  - [x] `src/types/sidebar.ts` — `SidebarUser` extended with `image?: string | null`
+  - [x] `src/app/(dashboard)/layout.tsx` — replaced hardcoded `demo@devstash.io` with `auth()` session; fetches real user via `getUserById(session.user.id)`
+  - [x] `src/app/(dashboard)/dashboard/page.tsx` — replaced hardcoded email lookup with `auth()` session
+  - [x] `next.config.ts` — `avatars.githubusercontent.com` added to `images.remotePatterns` for GitHub avatars
+  - [x] `shadcn` `dropdown-menu` and `label` components installed
+  - [x] `docs/auth-flow.md` created — documents full sign-in, GitHub OAuth, registration, and auto-login flows
 
 - Auth Credentials - Email/Password Provider
   - [x] `src/auth.config.ts` — added Credentials placeholder with `email`/`password` field definitions (edge-safe, `authorize: () => null`)
