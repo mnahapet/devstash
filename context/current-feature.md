@@ -1,12 +1,23 @@
-# Current Feature
+# Current Feature: Auth UI - Sign In, Register & Sign Out
 
 ## Status
 
-Completed
+In Progress
 
 ## Goals
 
+- Custom `/sign-in` page with email/password fields, GitHub button, and link to register
+- Custom `/register` page with name/email/password/confirm fields, validation, and submit to `/api/auth/register`
+- Sidebar bottom shows user avatar (GitHub image or initials fallback), name, and sign-out dropdown
+- Avatar click opens dropdown with "Sign out" link; clicking icon navigates to `/profile`
+- Reusable avatar component handles both image and initials cases
+
 ## Notes
+
+- NextAuth must be configured to use `/sign-in` as the custom sign-in page (instead of default `/api/auth/signin`)
+- Avatar logic: use `user.image` if present (GitHub OAuth), otherwise generate initials from name (e.g. "Brad Traversy" → "BT")
+- Register form submits to existing `POST /api/auth/register`; on success, auto-signs in with `signIn('credentials', { email, password, callbackUrl: '/dashboard' })` — no manual sign-in step required (documented in `docs/auth-flow.md`)
+- Form validation: passwords match, email format, min 8-char password
 
 ## History
 
