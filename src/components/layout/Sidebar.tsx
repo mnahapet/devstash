@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 import {
   ChevronDown,
   Star,
@@ -9,13 +10,21 @@ import {
   Pin,
   FolderOpen,
   Library,
-  Settings,
+  LogOut,
+  User,
   PanelLeftClose,
   PanelLeftOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetContent,
@@ -25,19 +34,7 @@ import { useSidebar } from './sidebar-context';
 import type { ItemTypeWithCount } from '@/lib/db/item-types';
 import type { SidebarUser, SidebarCollection, SidebarItem } from '@/types/sidebar';
 import { ICON_MAP, getDominantTypeColor } from '@/lib/constants/item-types';
-
-function getUserInitials(name: string | null): string {
-  if (!name) return '?';
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
+import { UserAvatar } from '@/components/auth/UserAvatar';
 
 interface SidebarProps {
   user: SidebarUser;
@@ -73,8 +70,6 @@ function MiniSidebarContent({
   onToggle?: () => void;
   showToggle?: boolean;
 }) {
-  const initials = getUserInitials(user.name);
-
   return (
     <div className='flex flex-col items-center h-full py-2'>
       <div className='sidebar-scroll flex-1 overflow-y-auto flex flex-col items-center w-full px-1.5'>
@@ -197,9 +192,9 @@ function MiniSidebarContent({
       </div>
 
       <div className='shrink-0 pt-2 border-t border-border w-full flex justify-center'>
-        <div className='flex items-center justify-center h-8 w-8 rounded-full bg-muted text-xs font-semibold'>
-          {initials}
-        </div>
+        <Link href='/profile' title='Profile'>
+          <UserAvatar name={user.name} image={user.image ?? null} size={32} className='text-xs' />
+        </Link>
       </div>
     </div>
   );
@@ -222,7 +217,6 @@ function SidebarContent({
   const [itemsOpen, setItemsOpen] = useState(true);
   const { toggleCollapsed } = useSidebar();
 
-  const initials = getUserInitials(user.name);
   const handleToggle = onClose ?? toggleCollapsed;
 
   return (
@@ -482,18 +476,30 @@ function SidebarContent({
 
       {/* User Area */}
       <div className='shrink-0 border-t border-border p-3'>
-        <div className='flex items-center gap-2.5'>
-          <div className='flex items-center justify-center h-8 w-8 rounded-full bg-muted text-sm font-semibold shrink-0'>
-            {initials}
-          </div>
-          <div className='flex-1 min-w-0'>
-            <p className='text-sm font-medium truncate'>{user.name ?? 'User'}</p>
-            <p className='text-xs text-muted-foreground truncate'>{user.email}</p>
-          </div>
-          <Button variant='ghost' size='icon' className='h-7 w-7 shrink-0' aria-label='Settings'>
-            <Settings className='h-4 w-4' />
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger className='flex items-center gap-2.5 w-full rounded-md px-1 py-1 hover:bg-accent transition-colors text-left cursor-pointer'>
+            <UserAvatar name={user.name} image={user.image ?? null} size={32} className='text-sm shrink-0' />
+            <div className='flex-1 min-w-0'>
+              <p className='text-sm font-medium truncate'>{user.name ?? 'User'}</p>
+              <p className='text-xs text-muted-foreground truncate'>{user.email}</p>
+            </div>
+            <ChevronDown className='h-3.5 w-3.5 shrink-0 text-muted-foreground' />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='top' align='start' className='w-52'>
+            <DropdownMenuItem onClick={() => window.location.href = '/profile'}>
+              <User className='h-4 w-4' />
+              Profile
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant='destructive'
+              onClick={() => signOut({ callbackUrl: '/sign-in' })}
+            >
+              <LogOut className='h-4 w-4' />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

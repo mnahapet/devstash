@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { getUserByEmail } from '@/lib/db/users';
+import { auth } from '@/auth';
 import SectionErrorBoundary from '@/components/dashboard/SectionErrorBoundary';
 import StatsSection from '@/components/dashboard/sections/StatsSection';
 import PinnedSection from '@/components/dashboard/sections/PinnedSection';
@@ -19,8 +19,9 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ collectionsPage?: string; itemsPage?: string }>;
 }) {
-  const user = await getUserByEmail('demo@devstash.io');
-  if (!user) redirect('/login');
+  const session = await auth();
+  if (!session?.user?.id) redirect('/sign-in');
+  const user = { id: session.user.id };
 
   const params = await searchParams;
   const collectionsPage = Math.max(1, parseInt(params.collectionsPage ?? '1', 10) || 1);

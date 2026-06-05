@@ -1,4 +1,4 @@
-export type SidebarUser = { name: string | null; email: string };
+export type SidebarUser = { name: string | null; email: string; image?: string | null };
 
 export type SidebarCollection = {
   id: string;
