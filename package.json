@@ -11,6 +11,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "db:test": "tsx scripts/test-db.ts",
+    "db:cleanup": "tsx scripts/cleanup-users.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

@@ -143,20 +143,17 @@ POST /api/auth/register
   → create user (emailVerified: null)
   → generate crypto token (32 bytes hex)
   → store in VerificationToken (expires: +1 hour)
-  → send email via Resend with link: /api/auth/verify-email?token=xxx
+  → send email via Resend with link: /verify-email?token=xxx
+    (baseUrl derived from req.url — no env var needed)
   → 201 → register page redirects to /check-your-email?email=xxx
 
 User clicks link in email
-  → GET /api/auth/verify-email?token=xxx
-  → token missing        → redirect /verify-email?error=invalid
-  → token not in DB      → redirect /verify-email?error=invalid
-  → token expired        → delete token, redirect /verify-email?error=expired
-  → token valid          → set user.emailVerified, delete token
-                         → redirect /sign-in?verified=true
-
-/sign-in?verified=true
-  → shows "Email verified — sign in to continue." banner
-  → user signs in normally → /dashboard
+  → /verify-email?token=xxx  (server component page)
+  → token missing / not in DB  → render error UI ("Invalid verification link")
+  → token expired              → delete token, render error UI ("Link has expired")
+  → token valid                → set user.emailVerified, delete token
+                               → render success UI ("Email Verified!")
+                               → user clicks "Sign in to your account" → /sign-in
 
 User on /check-your-email clicks "Resend verification email"
   → POST /api/auth/resend-verification { email }
@@ -170,15 +167,13 @@ User on /check-your-email clicks "Resend verification email"
 
 | File | Role |
 |------|------|
-| `src/lib/email.ts` | Resend client + `sendVerificationEmail(to, token)` |
+| `src/lib/email.ts` | Resend client + `sendVerificationEmail(to, token, baseUrl)` |
 | `src/app/api/auth/register/route.ts` | Creates user, token, sends email; rolls back on email failure |
-| `src/app/api/auth/verify-email/route.ts` | GET — validates token, sets `emailVerified`, redirects |
 | `src/app/api/auth/resend-verification/route.ts` | POST — deletes old token, issues new one, resends email |
 | `src/app/(auth)/check-your-email/page.tsx` | Info page with email address + Resend button |
-| `src/app/(auth)/verify-email/page.tsx` | Error-only page — renders `?error=invalid` / `?error=expired` |
+| `src/app/(auth)/verify-email/page.tsx` | Handles token validation + renders success or error UI |
 | `src/components/auth/ResendVerificationButton.tsx` | Client component — calls resend API, shows feedback |
 | `src/auth.ts` | `authorize`: returns null if `!user.emailVerified` |
-| `src/app/(auth)/sign-in/page.tsx` | Shows verified banner on `?verified=true` |
 
 ---
 

@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    await sendVerificationEmail(email, token)
+    const baseUrl = new URL(req.url).origin
+    await sendVerificationEmail(email, token, baseUrl)
 
     return NextResponse.json({ success: true })
   } catch {

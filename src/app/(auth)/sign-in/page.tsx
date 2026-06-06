@@ -13,7 +13,6 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
-  const verified = searchParams.get('verified') === 'true';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,11 +45,6 @@ function SignInForm() {
 
   return (
     <div className='bg-card border border-border rounded-xl p-6 space-y-4'>
-      {verified && (
-        <p className='text-sm text-center text-emerald-500'>
-          Email verified — sign in to continue.
-        </p>
-      )}
       {/* GitHub */}
       <Button
         variant='outline'

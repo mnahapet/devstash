@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
     })
 
     try {
-      await sendVerificationEmail(email, token)
+      const baseUrl = new URL(req.url).origin
+      await sendVerificationEmail(email, token, baseUrl)
     } catch {
       await prisma.user.delete({ where: { id: user.id } })
       await prisma.verificationToken.deleteMany({ where: { identifier: email } })
