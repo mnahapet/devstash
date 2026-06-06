@@ -1,24 +1,41 @@
-# Current Feature
+# Current Feature: Email Verification Toggle
 
 ## Status
 
+In Progress
+
 ## Goals
 
+- Add `SKIP_EMAIL_VERIFICATION=true` env var to bypass the email verification flow entirely
+- When **set to true**: register creates user with `emailVerified` already set → redirect to `/sign-in` directly
+- When **set to true**: `authorize` in `auth.ts` skips the `emailVerified` check — all registered users can sign in
+- When **not set or false**: existing behavior unchanged — token generated, email sent, user must verify before signing in
+- No other code paths affected — one flag, two touch points (register route + authorize)
+
 ## Notes
+
+- `SKIP_EMAIL_VERIFICATION=true` in `.env` disables verification; omitting it or any other value keeps verification on
+- Helper: `const skipEmailVerification = process.env.SKIP_EMAIL_VERIFICATION === 'true'`
+- **Register route** (`src/app/api/auth/register/route.ts`):
+  - If skipping: create user with `emailVerified: new Date()`, include `emailVerificationRequired: false` in response
+  - If not skipping: existing flow (token + Resend email), include `emailVerificationRequired: true` in response
+  - Register page branches on `emailVerificationRequired`: `false` → `router.push('/sign-in')`, `true` → `router.push('/check-your-email?email=...')`
+- **Auth authorize** (`src/auth.ts`):
+  - If skipping: remove the `if (!user.emailVerified) return null` guard
+- **No new UI needed** — existing check-your-email, verify-email, and resend pages remain; just never reached when skipping
+- Add `SKIP_EMAIL_VERIFICATION=true` to `.env.example` with a comment
 
 ## History
 
 - Email Verification
-  - [x] `src/lib/email.ts` — Resend client + `sendVerificationEmail(to, token)`
+  - [x] `src/lib/email.ts` — Resend client + `sendVerificationEmail(to, token, baseUrl)`
   - [x] `src/app/api/auth/register/route.ts` — generates token, stores in `VerificationToken`, sends email; rolls back user + token on email failure
-  - [x] `src/app/api/auth/verify-email/route.ts` — GET: validates token, sets `emailVerified`, redirects to `/sign-in?verified=true` or `/verify-email?error=`
   - [x] `src/app/api/auth/resend-verification/route.ts` — POST: deletes old token, issues new one, resends email; always returns `{ success: true }` to avoid email enumeration
   - [x] `src/app/(auth)/register/page.tsx` — redirects to `/check-your-email?email=...` on success (removed auto sign-in)
   - [x] `src/app/(auth)/check-your-email/page.tsx` — info page showing email address + `ResendVerificationButton`
-  - [x] `src/app/(auth)/verify-email/page.tsx` — error-only page, renders message from `?error=invalid` / `?error=expired`
+  - [x] `src/app/(auth)/verify-email/page.tsx` — validates token, renders "Email Verified!" success UI or error UI inline
   - [x] `src/components/auth/ResendVerificationButton.tsx` — client component: calls resend API, shows sent/error feedback
   - [x] `src/auth.ts` — `authorize` blocks sign-in if `!user.emailVerified`
-  - [x] `src/app/(auth)/sign-in/page.tsx` — shows "Email verified — sign in to continue." banner on `?verified=true`
   - [x] `docs/resend.md` — Resend setup, from address, free tier, adding new email types
   - [x] `docs/auth-flow.md` — updated with full email verification flow diagram and key files
   - [x] `context/features/email-verification-spec.md` — full spec: flow, key files, env vars, error states, constraints, testing
@@ -96,244 +113,37 @@
 
 - next.js cleanup and tailwind setup
 - Dashboard UI Phase 1: ShadCN setup, dashboard route, top bar with centered search, logo icon, dark mode, sidebar/main placeholders
-  - [x] ShadCN UI initialization and components
-  - [x] ShadCN component installation
-  - [x] Dashboard route at /dashboard
-  - [x] Main dashboard layout and any global styles
-  - [x] Dark mode by default
-  - [x] Top bar with search and new item button (display only)
-  - [x] Placeholder for sidebar and main area. Just add an h2 with "Sidebar" and "Main" for now.
 - Dashboard UI Phase 2: Collapsible sidebar with navigation, collections, and user avatar
-  - [x] Collapsible sidebar
-  - [x] Items/types with links to /items/TYPE (e.g. /items/snippets)
-  - [x] Favorite collections
-  - [x] Most recent collections
-  - [x] User avatar area at the bottom
-  - [x] Drawer icon to open/close sidebar
-  - [x] Always a drawer on mobile view
 - Dashboard UI Phase 3: Main area with stats cards, recent collections, pinned items, and recent items
-  - [x] 4 stats cards at the top (number of items, collections, favorite items, favorite collections)
-  - [x] Recent collections
-  - [x] Pinned items
-  - [x] 10 recent items
-  - [x] Collection cards have a proportional color strip on the left based on item type distribution
-  - [x] Pinned and recent items have a left border in their item type color
-  - [x] Dark/light mode toggler in top bar at right edge next to New Item (persists to localStorage)
-  - [x] List/grid view switcher in top bar (affects collections, pinned, and recent items)
-  - [x] Responsive top bar (search and New Collection hidden on mobile, New Item icon-only on small screens)
-  - [x] FolderPlus icon on New Collection button
-  - [x] Styled thin scrollbar on main content area matching sidebar scrollbar
 - Sidebar collection folder icon colored by dominant item type
-  - [x] Folder icons in "All Collections" sidebar section are colored with the dominant item type color (highest count in typeDistribution)
 - Mobile UX improvements & scrollbar polish
-  - [x] Mobile search bar expands inline in TopBar (replaces header content) with autoFocus, Escape to close, X close icon, theme toggle at right edge
-  - [x] Logo and sidebar toggle remain visible when mobile search is open
-  - [x] Mini sidebar (icons only, 48px) always visible on mobile < lg breakpoint with item type icons and user initials
-  - [x] Mobile drawer starts below TopBar (top-14 offset) so TopBar is never covered
-  - [x] Sidebar collapse animation scoped to transition-[width] to prevent TopBar flicker
-  - [x] Scrollbars reworked: theme-aware rgba thumb colors (light/dark mode), 6px width, transparent track, consistent appearance across sidebar and main area
 - Sidebar & favicon polish
-  - [x] Desktop collapse toggler now collapses to mini sidebar (icons only, 48px) instead of fully hiding
-  - [x] Mobile drawer width fixed to 240px (15rem) via inline style — Tailwind w-* was overridden by SheetContent's built-in data-[side=left]:w-3/4
-  - [x] Sidebar hydration mismatch fixed: isCollapsed now always initializes as false on server, then reads localStorage in useEffect
-  - [x] Favicon added as src/app/icon.tsx (Next.js App Router auto-detection) — black Layers icon, 32×32
 - Sidebar toggle UX polish
-  - [x] Toggle moved from TopBar into sidebar itself — `PanelLeftClose` (Lucide) in the full sidebar header, `PanelLeftOpen` (Lucide) in the mini sidebar, right-aligned in both cases
-  - [x] Full sidebar header shows "Navigation" label + `PanelLeftClose` toggle; on desktop it collapses to mini, in the mobile drawer it closes the drawer
-  - [x] Mini sidebar shows `PanelLeftOpen` toggle (right-aligned) only when the mobile drawer is closed; hidden when drawer is open to avoid duplicate toggles
-  - [x] Mobile drawer starts at left:0, fully covering the mini sidebar so the header looks identical in desktop expanded and mobile expanded states
-  - [x] `isMobileOpen` auto-closes when window resizes to ≥ lg (1024px) via MediaQueryList listener in SidebarProvider, preventing desktop/mobile overlap
-  - [x] Mobile search close button uses `X` icon (Lucide)
 - Prisma 7 + Neon PostgreSQL setup
-  - [x] Install Prisma 7 and review upgrade guide for breaking changes
-  - [x] Configure Neon PostgreSQL connection via DATABASE_URL
-  - [x] Create `prisma/schema.prisma` with full schema (User, Item, ItemType, Collection, ItemCollection, Tag)
-  - [x] Include NextAuth models (Account, Session, VerificationToken)
-  - [x] Add appropriate indexes and cascade deletes
-  - [x] Create initial migration with `prisma migrate dev`
-  - [x] Create `prisma/seed.ts` to seed system item types
-  - [x] Verify migration runs cleanly against development Neon branch
 - Seed data
-  - [x] Demo user: demo@devstash.io, password hashed with bcryptjs (12 rounds)
-  - [x] 7 system item types seeded (snippet, prompt, command, note, file, image, link)
-  - [x] React Patterns collection with 3 TypeScript snippets
-  - [x] AI Workflows collection with 3 prompts
-  - [x] DevOps collection with 1 snippet, 1 command, 2 links
-  - [x] Terminal Commands collection with 4 commands
-  - [x] Design Resources collection with 4 links
-  - [x] Seed runs cleanly via `npm run db:seed`
 - Sidebar navigation restructure
-  - [x] Separator line added between Types and Collections sections
-  - [x] COLLECTIONS section replaced with FAVORITES section showing 3 most recent favorite collections (pink Heart icon) and 3 most recent favorite items (yellow Star icon)
-  - [x] COLLECTIONS section added below FAVORITES showing all collections sorted newest first (folder icon colored by dominant item type + item count)
-  - [x] Favorite Collections stat card icon changed from BookMarked to Heart (pink, with pink-tinted background)
-  - [x] COLLECTIONS section replaced with RECENT section showing 3 most recently updated collections (folder icon) and 3 most recently updated items (type icon), newest first
-  - [x] PINNED section added above TYPES showing 1 most recently updated pinned collection and 1 most recently updated pinned item (both with filled white Pin icon)
-  - [x] Added isPinned field to mock collections data
-  - [x] Dashboard Pinned section moved before Collections, shows all pinned collections then items as horizontal carousel
-  - [x] Carousel has left/right arrow buttons, dot indicators, and active card highlighted with white ring on all sides
-  - [x] Pinned carousel uses shadcn Carousel (Embla) with custom arrow buttons in header and dot indicators; active card highlighted with ring-1 ring-white/50
 - Dashboard card & carousel polish
-  - [x] Favorites carousel added to main dashboard area (between Pinned and Collections), showing all favorite collections then items, with filled pink Heart icon before "FAVORITES" title
-  - [x] Collection cards (all sections): colored FolderOpen icon in top-left (dominant item type color), status icons grouped in top-right, title below, item count below title, description below count
-  - [x] Item cards (all sections): small tinted type icon in top-left (h-5 w-5), status icons grouped in top-right, title below, description below with mt-2 spacing
-  - [x] Status icons shown for both collections and items: Heart (pink, filled) + Star (yellow, filled) if isFavorite; Pin (white, filled) if isPinned
-  - [x] Favorites carousel cards omit Heart icon (redundant in that section); Pinned carousel cards omit Pin icon
-  - [x] MoreHorizontal (…) menu button removed from all collection cards across all sections
-  - [x] Collections section renamed from "Recent Collections" to "Collections"; shows all collections sorted by updatedAt descending (no slice limit)
-  - [x] Items section renamed from "Recent Items" to "Items" with Clock icon removed; shows all items sorted by updatedAt descending (no slice limit)
-  - [x] Collections list row restructured to match item row: FolderOpen icon left, name + Heart/Star/Pin inline, description below, item count below description
-  - [x] Item list rows: Heart + Star + Pin shown inline next to title; description spacing increased to mt-1.5
-  - [x] ItemCard grid: icon reduced to h-5 w-5, description spacing mt-1 → mt-2
-  - [x] ItemRow description spacing mt-0.5 → mt-1.5
 - Dashboard card layout refinements
-  - [x] Item cards (grid): tags/date row pinned to bottom with mt-auto pt-3; spacing between description and tags matches pt-3 used before collection type icons
-  - [x] Item cards (list): tags spacing from description increased to mt-3 for consistency with grid
-  - [x] Collection cards (grid): item count moved inline next to folder icon in top row instead of separate line below title
-  - [x] Collection cards (grid): type icons pinned to bottom with mt-auto pt-3 (flex flex-col added to inner content div)
-  - [x] Tags: hover state added (bg-accent text-foreground with transition) across grid and list modes
 - Dashboard further refinements
-  - [x] Items grid changed to 3 columns (grid-cols-1 sm:grid-cols-2 lg:grid-cols-3) matching collections
-  - [x] RecentCarousel added below Items section: shows 3 most recent collections then 3 most recent items in a carousel with Clock icon header
-  - [x] RecentItems.tsx renamed to Items.tsx (component: Items), RecentCollections.tsx renamed to Collections.tsx (component: Collections)
-  - [x] Sidebar: replaced closed Folder icon with FolderOpen for collection links
 - Dashboard stats cards polish
-  - [x] Items card: label renamed from "Total Items" to "Items", icon changed to filled white Library
-  - [x] Collections card: icon changed to filled blue closed Folder
-  - [x] Favorite Items card: icon changed to filled yellow Star with yellow-tinted background
-  - [x] Favorite Collections card: icon changed to filled pink Heart with pink-tinted background
 - Mini sidebar restructure
-  - [x] Added unfilled Pin icon at top, then separator, type icons, separator, pink Heart + yellow Star icons, separator, Clock icon
-  - [x] Heart and Star link to /dashboard favorites; Clock links to /dashboard recent
-- Dashboard further refinements
-  - [x] RecentCarousel added below Items section: shows 3 most recent collections then 3 most recent items in a carousel with Clock icon header
 - Dashboard pagination & mock data expansion
-  - [x] Collections section: client-side pagination added, 6 per page, chevron buttons with page indicator
-  - [x] Items section: client-side pagination added, 6 per page, chevron buttons with page indicator
-  - [x] "View all" text removed from Collections section header
-  - [x] Mock data expanded to 16 collections and 22 items to demonstrate pagination
 - Expanded seed data (11 collections, 36 items)
-  - [x] 6 new collections seeded: TypeScript Utils, Next.js Patterns, Database & SQL, Interview Prep, Security Notes, VS Code Setup
-  - [x] 3 items per collection (mix of snippets, prompts, commands, notes, links) with realistic content
-  - [x] All upserts use stable seed IDs for idempotency
 - Dashboard Collections — Real Data
-  - [x] Created `src/lib/db/collections.ts` with `getCollections(userId)` and `getCollectionStats(userId)`
-  - [x] `CollectionWithStats` type includes `id`, `name`, `description`, `isFavorite`, `isPinned`, `hasFavoriteItem`, `itemCount`, `typeDistribution`, timestamps
-  - [x] `typeDistribution` computed from `ItemCollection → Item → ItemType` — includes `typeId`, `color`, `icon`, `count`
-  - [x] Dashboard page made async server component; fetches collections and stats in parallel via `Promise.all`
-  - [x] `export const dynamic = 'force-dynamic'` added to dashboard page to prevent static prerendering
-  - [x] `StatsCards` updated to accept and display real `collectionStats` (total + favorites) from DB
-  - [x] `Collections` component updated to accept `CollectionWithStats[]` prop; all mock collection references removed
-  - [x] `scripts/set-favorites.ts` created to mark 4 collections as `isFavorite: true` in DB
 - Collection card status icons — real data
-  - [x] `isPinned Boolean @default(false)` added to Collection schema; migration `add_collection_is_pinned` applied
-  - [x] `hasFavoriteItem` computed in `getCollections` by checking `item.isFavorite` across all items in a collection
-  - [x] Collection cards (grid + list) now show: pink Heart if `isFavorite`, yellow Star if `hasFavoriteItem`, theme-foreground Pin if `isPinned`
-  - [x] Pin icon color changed to `fill-foreground text-foreground` to be visible in both light and dark mode
-  - [x] `scripts/set-pins-and-item-favorites.ts` created to mark 6 items as `isFavorite` and 2 collections as `isPinned` in DB
 - Sidebar favorite collections — real data
-  - [x] `Sidebar` accepts optional `favoriteCollections: { id, name, itemCount }[]` prop
-  - [x] Dashboard page derives top-3 favorite collections from already-fetched `collections` array (no extra DB query)
-  - [x] Sidebar Favorites section renders real favorite collections with pink Heart icon and item count
-  - [x] Heart color in sidebar set to `fill-pink-500 text-pink-500` matching dashboard card design
 - Dashboard Items — Real Data
-  - [x] Created `src/lib/db/items.ts` with `getItems(userId)` and `deriveItemStats(items)`
-  - [x] `ItemWithType` includes `inFavoriteCollection` computed from `ItemCollection → Collection.isFavorite`
-  - [x] `deriveItemStats` derives total and favorites counts from already-fetched array (no extra DB query)
-  - [x] Dashboard page fetches items in parallel with collections via `Promise.all`
-  - [x] `StatsCards` updated to accept real `itemStats` prop; mock data removed
-  - [x] `Items` component updated to accept `ItemWithType[]` prop; mock data removed
-  - [x] `PinnedItems`, `FavoriteItems`, `RecentCarousel` updated to accept real data props; mock data removed
-  - [x] `ItemCard` and `ItemRow`: heart icon driven by `inFavoriteCollection`, star by `isFavorite`
-  - [x] Dashboard page derives pinned/favorite/recent subsets from fetched arrays (no extra DB queries)
-  - [x] Hydration mismatch fixed: `timeZone: 'UTC'` added to all `toLocaleDateString` calls in item card/row components
 - Sidebar — Real Data
-  - [x] Created `src/lib/db/item-types.ts` with `getItemTypesWithCounts(userId)` — fetches all system types with per-type item count in two parallel queries
-  - [x] `Sidebar` fully typed via props: `user`, `itemTypes`, `pinnedCollections`, `pinnedItems`, `favoriteCollections`, `favoriteItems`, `recentCollections`, `recentItems`
-  - [x] All mock data imports removed from `Sidebar.tsx`
-  - [x] `getDominantTypeColor` reads `color` directly from `typeDistribution` — no mock type lookup
-  - [x] Dashboard page fetches `itemTypes` in `Promise.all` alongside collections and items
-  - [x] All sidebar subsets derived from already-fetched arrays — no extra DB queries
-  - [x] User name and email in sidebar footer sourced from DB user record
 - Dashboard loading state & UX polish
-  - [x] `src/app/(dashboard)/dashboard/loading.tsx` added — Next.js App Router loading convention shown during data fetch
-  - [x] Colorful conic-gradient ring spinner (all 7 type colors) centered over skeleton content via absolute overlay
-  - [x] Skeleton sidebar on desktop mirrors real sidebar structure (types, favorites, collections, footer)
-  - [x] Skeleton main content matches dashboard layout: heading, stats cards, 2 carousels, 2 grids
-  - [x] `loader-spinner` keyframe animation added to `globals.css`
-  - [x] View mode (list/grid) persisted to `localStorage` under `devstash:viewMode`
 - Sidebar navigation refactor
-  - [x] Item type links updated to `/items/[typename]` (singular); labels shown in plural form (e.g. "Snippets")
-  - [x] COLLECTIONS group added with Recent (colored dot) and Favorites (filled pink Heart) subgroups + "View all" link
-  - [x] ITEMS group added with Recent (colored dot) and Favorites (filled yellow Star) subgroups + "View all" link
-  - [x] PINNED group: both collections and items now show filled white Pin icon instead of type icon
-  - [x] All sidebar subsets (pinned, favorites, recent) sorted by `updatedAt` desc — most recently updated shown first
-  - [x] `stats-sidebar-spec.md` updated to reflect current implementation
 - Add Pro Badge to Sidebar
-  - [x] ShadCN `Badge` component added (`src/components/ui/badge.tsx`)
-  - [x] "PRO" badge displayed next to "Files" and "Images" item types in the full sidebar
-  - [x] Badge style: subtle, muted variant (not loud or distracting)
 - Remove redundant getCollectionStats DB query
-  - [x] Deleted `getCollectionStats` (fired 2 extra COUNT queries on every dashboard load)
-  - [x] Added `deriveCollectionStats(collections)` — pure synchronous function, matches `deriveItemStats` pattern
-  - [x] Dashboard `Promise.all` reduced from 4 to 3 concurrent queries
-  - [x] `StatsCards` prop interface unchanged — `CollectionStats` type kept as-is
 - Extract shared carousel cards
-  - [x] Created `src/components/dashboard/shared/carousel-cards.tsx` with `CollectionCarouselCard`, `ItemCarouselCard`, `ICON_MAP`, `getDominantTypeColor`, `buildGradient`
-  - [x] Cards accept `showHeart?` and `showPin?` props (default `true`) to suppress context-redundant status icons
-  - [x] `PinnedItems` passes `showPin={false}`, `FavoriteItems` passes `showHeart={false}`, `RecentCarousel` uses all defaults
-  - [x] All local copies of extracted code removed from the three carousel files
 - Move user DB lookup out of dashboard page
-  - [x] Created `src/lib/db/users.ts` with `getUserById` and `getUserByEmail`
-  - [x] Dashboard page uses `getUserByEmail` (demo placeholder); `getUserById` ready for NextAuth session integration
-  - [x] Inline `prisma.user.findFirst` removed from page; `findUnique` used (email is @unique)
 - Carousel code quality fixes
-  - [x] Stable compound keys (`${kind}-${id}`) replace array-index keys on `CarouselItem` and dot indicator buttons in `PinnedItems`, `FavoriteItems`, `RecentCarousel`
-  - [x] `allPinned`, `allFavorites`, `allRecent` wrapped in `useMemo` to avoid recreating spread arrays on every render
-  - [x] `collections.sort()` and `items.sort()` in dashboard page replaced with `.toSorted()` to prevent silent in-place mutation of shared arrays
 - Mini sidebar enhanced navigation
-  - [x] Pinned group: filled `Pin` icon (`fill-foreground text-foreground`) links to most recently updated pinned collection; hidden when none exists
-  - [x] Separator visibility improved: `border-border` → `border-muted-foreground/30`, `my-1` → `my-1.5` across all three dividers
-  - [x] Collections group added after types: `FolderOpen` → `/collections`, filled pink `Heart` → most recent favorite collection, colored circle (dominant type color) → most recent collection
-  - [x] Items group added after collections: `Library` → `/items`, filled yellow `Star` → most recent favorite item, colored circle (item type color) → most recent item
-  - [x] `MiniSidebarContent` receives `favoriteCollections`, `recentCollections`, `favoriteItems`, `recentItems` props; only `[0]` of each rendered
-  - [x] All conditional items render nothing (no placeholder) when backing data is absent
-  - [x] Both desktop collapsed aside and mobile mini aside use identical props
-  - [x] Spec created at `context/features/sidebar-mini-spec.md`
 - Sidebar layout restructure & toggle fix
-  - [x] `Sidebar` moved from `dashboard/page.tsx` into `(dashboard)/layout.tsx` so it persists across all dashboard routes (not just `/dashboard`)
-  - [x] `SidebarProvider` moved from `(dashboard)/layout.tsx` into root `app/layout.tsx` so toggle state survives navigating to any URL (including 404s) and pressing back
-  - [x] All four DB functions wrapped with React `cache()` (`getUserByEmail`, `getCollections`, `getItems`, `getItemTypesWithCounts`) so layout and page share one DB round-trip per request
-  - [x] `dashboard/page.tsx` stripped of Sidebar rendering, sidebar-derived arrays, and `export const dynamic` (now on layout)
-  - [x] `loading.tsx` fixed: removed `SidebarSkeleton` which was creating a second sidebar in the flex row during loading, squishing the real sidebar's toggle button off-screen
-  - [x] Root cause note: sidebar links to `/collections/[id]`, `/items/[type]`, etc. have no pages yet inside `(dashboard)`, so those navigations still exit the layout; toggle will work correctly once those sub-pages are built
 - Next.js loading & error boundaries
-  - [x] Skeleton components extracted to `skeletons.tsx` (named exports: `Skeleton`, `StatsSkeleton`, `CarouselSkeleton`, `GridSkeleton`)
-  - [x] `loading.tsx` refactored to import from `skeletons.tsx`
-  - [x] Dashboard page sections converted to async server components (`StatsSection`, `PinnedSection`, `FavoritesSection`, `CollectionsSection`, `ItemsSection`, `RecentSection`)
-  - [x] Each section wrapped in `<Suspense>` with matching skeleton fallback — page shell renders immediately
-  - [x] `SectionErrorBoundary` class component created (`src/components/dashboard/SectionErrorBoundary.tsx`) — inline error strip with Retry button
-  - [x] Each `<Suspense>` wrapped in `<SectionErrorBoundary>` so a single failing section doesn't break the rest
-  - [x] `error.tsx` added at `(dashboard)/dashboard/` — catches page-level errors, centered UI with "Try again" reset
-  - [x] `error.tsx` added at `(dashboard)/` — catches layout-level errors (sidebar/auth), full-screen UI with reset
-  - [x] Spec created at `context/features/loading-error-spec.md`
 - Hydration mismatch fix
-  - [x] `suppressHydrationWarning` added to `<html>` in `layout.tsx` — the blocking theme script adds `dark` to `classList` before React hydrates, causing a server/client className mismatch; suppressing on `<html>` only is the correct scoped fix
-
 - Code quality & polish fixes
-  - [x] `carousel.tsx` (shadcn base) `reInit` cleanup gap closed — `api?.off("reInit", onSelect)` added to the `useEffect` return; `PinnedItems`, `FavoriteItems`, `RecentCarousel` were already correct
-  - [x] `CarouselCard` discriminated union extracted to `src/types/dashboard.ts`; local `PinnedCard`, `FavoriteCard`, `RecentCard` types removed from the three carousel files
-  - [x] Pagination buttons in `Collections.tsx` and `Items.tsx` given `aria-label='Previous page'` / `aria-label='Next page'`
-  - [x] Page clamping `useEffect` added to `Collections.tsx` and `Items.tsx` — resets to last valid page after `router.refresh()` shrinks the data set
-  - [x] `SectionErrorBoundary.tsx` deleted — component was unreachable; errors from `Promise.all` propagate before any React boundary, so `error.tsx` is the correct handler
-  - [x] `icon.tsx` favicon `stroke="black"` changed to `stroke="currentColor"` — safe default if SVG is ever reused outside the OG renderer
-
 - Code quality & security review fixes
-  - [x] Null user guard: `layout.tsx` and `page.tsx` redirect to `/login` instead of silently querying with empty userId
-  - [x] Error messages sanitised: `error.tsx` (both levels) and `SectionErrorBoundary` show `error.message` only in development, generic text in production
-  - [x] `getDominantTypeColor` and `buildGradient` consolidated into `src/lib/constants/item-types.ts`; `Collections.tsx` and `carousel-cards.tsx` import from there
-  - [x] `ICON_MAP` moved to `src/lib/constants/item-types.ts`; all five local copies removed from `Sidebar.tsx`, `Collections.tsx`, `ItemCard.tsx`, `ItemRow.tsx`, `carousel-cards.tsx`
-  - [x] `SectionErrorBoundary` Retry now calls `router.refresh()` (via functional wrapper + `useRouter`) so the server actually re-fetches data instead of re-rendering stale state
-  - [x] Dashboard page refactored: single `Promise.all([getCollections, getItems])` in `DashboardPage`; all six intermediate async section components and their `Suspense` fallbacks removed
-  - [x] Sidebar types consolidated: `SidebarFavCollection`, `SidebarRecentCollection`, `SidebarPinnedCollection` → `SidebarCollection`; `SidebarFavItem`, `SidebarRecentItem`, `SidebarPinnedItem` → `SidebarItem`
-  - [x] DB indexes: composite `(userId, updatedAt DESC)` added to `items` and `collections`; redundant `items_userId_idx`, `items_createdAt_idx`, `collections_userId_idx` dropped; migration `20260526120000_add_userid_updatedat_indexes` applied

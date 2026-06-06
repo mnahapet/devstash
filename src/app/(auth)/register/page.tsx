@@ -42,7 +42,12 @@ export default function RegisterPage() {
     setLoading(false);
 
     if (res.ok) {
-      router.push(`/check-your-email?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (data.emailVerificationRequired) {
+        router.push(`/check-your-email?email=${encodeURIComponent(email)}`);
+      } else {
+        router.push('/sign-in');
+      }
     } else {
       const data = await res.json();
       setError(data.error ?? 'Registration failed');

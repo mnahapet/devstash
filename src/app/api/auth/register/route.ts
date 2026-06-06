@@ -4,6 +4,8 @@ import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/email'
 
+const skipEmailVerification = process.env.SKIP_EMAIL_VERIFICATION === 'true'
+
 export async function POST(req: NextRequest) {
   try {
     const { name, email, password, confirmPassword } = await req.json()
@@ -26,6 +28,14 @@ export async function POST(req: NextRequest) {
     }
 
     const hashed = await bcrypt.hash(password, 12)
+
+    if (skipEmailVerification) {
+      await prisma.user.create({
+        data: { name, email, password: hashed, emailVerified: new Date() },
+      })
+      return NextResponse.json({ success: true, emailVerificationRequired: false }, { status: 201 })
+    }
+
     const user = await prisma.user.create({
       data: { name, email, password: hashed },
     })
@@ -51,7 +61,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    return NextResponse.json({ success: true }, { status: 201 })
+    return NextResponse.json({ success: true, emailVerificationRequired: true }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
