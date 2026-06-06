@@ -132,7 +132,65 @@ const user = { id: session.user.id };  // id only — no extra DB query
 5. Creates user (`prisma.user.create`)
 6. Returns `{ success: true }`
 
-After the API responds with `201`, the register page **automatically signs the user in** using the credentials they just submitted — no manual sign-in step required:
+After the API responds with `201`, the register page redirects to `/check-your-email?email=xxx`. See **Email Verification Flow** below for the full token + email pipeline.
+
+---
+
+## Email Verification Flow
+
+```
+POST /api/auth/register
+  → create user (emailVerified: null)
+  → generate crypto token (32 bytes hex)
+  → store in VerificationToken (expires: +1 hour)
+  → send email via Resend with link: /api/auth/verify-email?token=xxx
+  → 201 → register page redirects to /check-your-email?email=xxx
+
+User clicks link in email
+  → GET /api/auth/verify-email?token=xxx
+  → token missing        → redirect /verify-email?error=invalid
+  → token not in DB      → redirect /verify-email?error=invalid
+  → token expired        → delete token, redirect /verify-email?error=expired
+  → token valid          → set user.emailVerified, delete token
+                         → redirect /sign-in?verified=true
+
+/sign-in?verified=true
+  → shows "Email verified — sign in to continue." banner
+  → user signs in normally → /dashboard
+
+User on /check-your-email clicks "Resend verification email"
+  → POST /api/auth/resend-verification { email }
+  → delete existing tokens for email
+  → generate new token (expires: +1 hour)
+  → send new email
+  → returns { success: true } (always, to avoid email enumeration)
+```
+
+### Email verification key files
+
+| File | Role |
+|------|------|
+| `src/lib/email.ts` | Resend client + `sendVerificationEmail(to, token)` |
+| `src/app/api/auth/register/route.ts` | Creates user, token, sends email; rolls back on email failure |
+| `src/app/api/auth/verify-email/route.ts` | GET — validates token, sets `emailVerified`, redirects |
+| `src/app/api/auth/resend-verification/route.ts` | POST — deletes old token, issues new one, resends email |
+| `src/app/(auth)/check-your-email/page.tsx` | Info page with email address + Resend button |
+| `src/app/(auth)/verify-email/page.tsx` | Error-only page — renders `?error=invalid` / `?error=expired` |
+| `src/components/auth/ResendVerificationButton.tsx` | Client component — calls resend API, shows feedback |
+| `src/auth.ts` | `authorize`: returns null if `!user.emailVerified` |
+| `src/app/(auth)/sign-in/page.tsx` | Shows verified banner on `?verified=true` |
+
+---
+
+## Post-Registration Approaches
+
+There are several approaches for what happens next:
+
+### Post-Registration Approaches
+
+**1. Auto sign-in (previous approach)**
+
+Call `signIn('credentials', ...)` immediately after the successful register response. The user lands directly on the dashboard with no extra step.
 
 ```ts
 if (res.ok) {
@@ -140,7 +198,83 @@ if (res.ok) {
 }
 ```
 
-This calls the same `authorize` flow as a normal sign-in, creates the JWT session cookie, and redirects straight to `/dashboard`.
+- **Pros:** Best UX — seamless, no friction
+- **Cons:** Not compatible with email verification (can't sign in an unverified user)
+
+---
+
+**2. Redirect to sign-in with query param**
+
+Redirect to `/sign-in?registered=true` and show a subtle note like "Account created — sign in to continue."
+
+```ts
+if (res.ok) {
+  router.push('/sign-in?registered=true');
+}
+```
+
+On the sign-in page, read the param and render a notice:
+```ts
+const registered = searchParams.get('registered');
+// show: "Account created — sign in to continue."
+```
+
+- **Pros:** Clear feedback, user explicitly signs in
+- **Cons:** One extra step vs auto sign-in
+
+---
+
+**3. Do nothing**
+
+Just redirect to `/sign-in`. The context is self-explanatory — the user just registered, so signing in is the obvious next step.
+
+```ts
+if (res.ok) {
+  router.push('/sign-in');
+}
+```
+
+- **Pros:** Simplest implementation
+- **Cons:** No confirmation feedback; user may wonder if registration succeeded
+
+---
+
+**4. Redirect to info page (email verification) ✅ (current approach)**
+
+Required when email verification is enabled. Redirect to `/check-your-email` so the user knows to check their inbox before signing in.
+
+```ts
+if (res.ok) {
+  router.push('/check-your-email');
+}
+```
+
+The `authorize` function must block unverified users:
+```ts
+if (!user.emailVerified) return null;
+```
+
+- **Pros:** Secure — ensures only verified emails can access the app
+- **Cons:** Most complex to implement; requires an email provider (e.g. Resend), token generation, a verify route, and a verify page
+
+---
+
+### Toast on sign-in vs. dedicated info page (email verification)
+
+When email verification is required, there are two ways to inform the user after registration:
+
+**Toast notification on `/sign-in`**
+- User lands on sign-in, sees a brief toast: "Check your email to verify your account"
+- Toast disappears after a few seconds — easy to miss
+- Sign-in form is right there, so user may attempt to sign in immediately and hit a confusing "account not verified" error
+
+**Dedicated `/check-your-email` page** ✅ (recommended)
+- Full page with a clear instruction: "We sent a verification link to `email@example.com`"
+- Can include a "Resend email" button
+- No ambiguity — user knows exactly what to do before proceeding
+- Standard pattern used by most apps (GitHub, Vercel, Linear, etc.)
+
+**Verdict:** For email verification, the dedicated info page is strongly preferred. Toast is appropriate for minor, non-blocking feedback (e.g. "Profile updated") — not for a required action the user must complete before they can access the app.
 
 ---
 

@@ -10,6 +10,21 @@ Completed
 
 ## History
 
+- Email Verification
+  - [x] `src/lib/email.ts` — Resend client + `sendVerificationEmail(to, token)`
+  - [x] `src/app/api/auth/register/route.ts` — generates token, stores in `VerificationToken`, sends email; rolls back user + token on email failure
+  - [x] `src/app/api/auth/verify-email/route.ts` — GET: validates token, sets `emailVerified`, redirects to `/sign-in?verified=true` or `/verify-email?error=`
+  - [x] `src/app/api/auth/resend-verification/route.ts` — POST: deletes old token, issues new one, resends email; always returns `{ success: true }` to avoid email enumeration
+  - [x] `src/app/(auth)/register/page.tsx` — redirects to `/check-your-email?email=...` on success (removed auto sign-in)
+  - [x] `src/app/(auth)/check-your-email/page.tsx` — info page showing email address + `ResendVerificationButton`
+  - [x] `src/app/(auth)/verify-email/page.tsx` — error-only page, renders message from `?error=invalid` / `?error=expired`
+  - [x] `src/components/auth/ResendVerificationButton.tsx` — client component: calls resend API, shows sent/error feedback
+  - [x] `src/auth.ts` — `authorize` blocks sign-in if `!user.emailVerified`
+  - [x] `src/app/(auth)/sign-in/page.tsx` — shows "Email verified — sign in to continue." banner on `?verified=true`
+  - [x] `docs/resend.md` — Resend setup, from address, free tier, adding new email types
+  - [x] `docs/auth-flow.md` — updated with full email verification flow diagram and key files
+  - [x] `context/features/email-verification-spec.md` — full spec: flow, key files, env vars, error states, constraints, testing
+
 - Auth UI - Sign In, Register & Sign Out
   - [x] `src/auth.config.ts` — `pages: { signIn: '/sign-in' }` added so NextAuth uses custom page
   - [x] `src/proxy.ts` — redirect updated from `/api/auth/signin` to `/sign-in`

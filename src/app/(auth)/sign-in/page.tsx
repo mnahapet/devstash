@@ -13,13 +13,14 @@ function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
+  const verified = searchParams.get('verified') === 'true';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
     setLoading(true);
@@ -45,6 +46,11 @@ function SignInForm() {
 
   return (
     <div className='bg-card border border-border rounded-xl p-6 space-y-4'>
+      {verified && (
+        <p className='text-sm text-center text-emerald-500'>
+          Email verified — sign in to continue.
+        </p>
+      )}
       {/* GitHub */}
       <Button
         variant='outline'
