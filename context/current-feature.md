@@ -2,8 +2,6 @@
 
 ## Status
 
-Completed
-
 ## Goals
 
 ## Notes
