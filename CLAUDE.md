@@ -12,6 +12,10 @@ Read the following to get the full context of the project
 - @context/current-feature.md
 
 
+## Rules
+
+- **Page files (`page.tsx`) must always be server components** — never add `'use client'` to a page file. When a page needs interactive UI or a form, extract it into a client component under `src/components/[feature]/` and import it from the server page.
+
 ## Commands
 
 ```bash
