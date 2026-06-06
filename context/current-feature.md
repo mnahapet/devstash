@@ -1,31 +1,17 @@
-# Current Feature: Email Verification Toggle
+# Current Feature
 
 ## Status
 
-In Progress
-
 ## Goals
-
-- Add `SKIP_EMAIL_VERIFICATION=true` env var to bypass the email verification flow entirely
-- When **set to true**: register creates user with `emailVerified` already set → redirect to `/sign-in` directly
-- When **set to true**: `authorize` in `auth.ts` skips the `emailVerified` check — all registered users can sign in
-- When **not set or false**: existing behavior unchanged — token generated, email sent, user must verify before signing in
-- No other code paths affected — one flag, two touch points (register route + authorize)
 
 ## Notes
 
-- `SKIP_EMAIL_VERIFICATION=true` in `.env` disables verification; omitting it or any other value keeps verification on
-- Helper: `const skipEmailVerification = process.env.SKIP_EMAIL_VERIFICATION === 'true'`
-- **Register route** (`src/app/api/auth/register/route.ts`):
-  - If skipping: create user with `emailVerified: new Date()`, include `emailVerificationRequired: false` in response
-  - If not skipping: existing flow (token + Resend email), include `emailVerificationRequired: true` in response
-  - Register page branches on `emailVerificationRequired`: `false` → `router.push('/sign-in')`, `true` → `router.push('/check-your-email?email=...')`
-- **Auth authorize** (`src/auth.ts`):
-  - If skipping: remove the `if (!user.emailVerified) return null` guard
-- **No new UI needed** — existing check-your-email, verify-email, and resend pages remain; just never reached when skipping
-- Add `SKIP_EMAIL_VERIFICATION=true` to `.env.example` with a comment
-
 ## History
+
+- Email Verification Toggle
+  - [x] `src/app/api/auth/register/route.ts` — when `SKIP_EMAIL_VERIFICATION=true`, creates user with `emailVerified: new Date()` and returns `emailVerificationRequired: false`; otherwise existing flow with `emailVerificationRequired: true`
+  - [x] `src/app/(auth)/register/page.tsx` — branches on `emailVerificationRequired`: `false` → `/sign-in`, `true` → `/check-your-email?email=...`
+  - [x] `src/auth.ts` — `authorize` skips `!user.emailVerified` guard when flag is set
 
 - Email Verification
   - [x] `src/lib/email.ts` — Resend client + `sendVerificationEmail(to, token, baseUrl)`
